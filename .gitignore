@@ -1,0 +1,44 @@
+function Analytics({ history, stats }) {
+  return (
+    <div className="section-wrap">
+      <div className="panel analytics-page">
+        <div className="game-header">
+          <div>
+            <p className="eyebrow">Performance</p>
+            <h2>Analytics</h2>
+          </div>
+        </div>
+
+        <div className="analytics-grid">
+          {history.map((item) => (
+            <div key={item.label} className="card stat-card">
+              <div className="stat-top">
+                <span>{item.label}</span>
+                <strong>{item.value}</strong>
+              </div>
+              <div className="progress-bar">
+                <span style={{ width: `${Math.min(item.value / 2, 100)}%` }} />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="summary-grid">
+          <div className="card summary-box">
+            <h3>Overall Record</h3>
+            <p>{stats.wins} Wins</p>
+            <p>{stats.losses} Losses</p>
+          </div>
+
+          <div className="card summary-box">
+            <h3>Efficiency</h3>
+            <p>{stats.winRate}% Win Rate</p>
+            <p>{stats.totalGames} Total Games</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default Analytics;
