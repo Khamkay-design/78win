@@ -1,34 +1,34 @@
-function UserProfile({ user, stats }) {
+function Leaderboard({ data }) {
   return (
-    <div className="section-wrap profile-page">
-      <div className="panel profile-card">
-        <div className="profile-hero">
-          <div className="avatar-circle large">{user.name.charAt(0).toUpperCase()}</div>
+    <div className="section-wrap">
+      <div className="panel leaderboard-page">
+        <div className="game-header">
           <div>
-            <p className="eyebrow">Player Profile</p>
-            <h2>{user.name}</h2>
-            <p className="muted">{user.rank} tier • Level {user.level}</p>
+            <p className="eyebrow">Community Rankings</p>
+            <h2>Leaderboard</h2>
           </div>
         </div>
 
-        <div className="profile-grid">
-          <div className="card info-box">
-            <h3>Overview</h3>
-            <p><strong>XP:</strong> {user.xp}</p>
-            <p><strong>Streak:</strong> {user.streak} wins</p>
-            <p><strong>Favorite Game:</strong> {user.favoriteGame}</p>
+        <div className="leaderboard-table">
+          <div className="leaderboard-head">
+            <span>Rank</span>
+            <span>Player</span>
+            <span>Wins</span>
+            <span>Score</span>
           </div>
 
-          <div className="card info-box">
-            <h3>Performance</h3>
-            <p><strong>Wins:</strong> {stats.wins}</p>
-            <p><strong>Losses:</strong> {stats.losses}</p>
-            <p><strong>Win Rate:</strong> {stats.winRate}%</p>
-          </div>
+          {data.map((player, index) => (
+            <div key={player.name} className="leaderboard-row">
+              <span>#{index + 1}</span>
+              <span>{player.badge} {player.name}</span>
+              <span>{player.wins}</span>
+              <span>{player.score}</span>
+            </div>
+          ))}
         </div>
       </div>
     </div>
   );
 }
 
-export default UserProfile;
+export default Leaderboard;
