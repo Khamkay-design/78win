@@ -1,94 +1,96 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 
-const winningPatterns = [
-  [0, 1, 2],
-  [3, 4, 5],
-  [6, 7, 8],
-  [0, 3, 6],
-  [1, 4, 7],
-  [2, 5, 8],
-  [0, 4, 8],
-  [2, 4, 6]
-];
+const choices = ['Rock', 'Paper', 'Scissors'];
 
-function TicTacToe({ user, onBack }) {
-  const [board, setBoard] = useState(Array(9).fill(null));
-  const [turn, setTurn] = useState('X');
-  const [winner, setWinner] = useState(null);
+const getWinner = (playerChoice, aiChoice) => {
+  if (playerChoice === aiChoice) return 'draw';
+  if (
+    (playerChoice === 'Rock' && aiChoice === 'Scissors') ||
+    (playerChoice === 'Paper' && aiChoice === 'Rock') ||
+    (playerChoice === 'Scissors' && aiChoice === 'Paper')
+  ) {
+    return 'player';
+  }
+  return 'ai';
+};
 
-  const isDraw = useMemo(() => board.every(Boolean) && !winner, [board, winner]);
+function RockPaperScissors({ user, onBack }) {
+  const [playerChoice, setPlayerChoice] = useState('');
+  const [aiChoice, setAiChoice] = useState('');
+  const [result, setResult] = useState('Choose a move to begin');
+  const [score, setScore] = useState({ player: 0, ai: 0 });
 
-  const checkWinner = (nextBoard) => {
-    for (const pattern of winningPatterns) {
-      const [a, b, c] = pattern;
-      if (nextBoard[a] && nextBoard[a] === nextBoard[b] && nextBoard[a] === nextBoard[c]) {
-        return nextBoard[a];
-      }
+  const playRound = (choice) => {
+    const randomIndex = Math.floor(Math.random() * choices.length);
+    const randomChoice = choices[randomIndex];
+    const roundResult = getWinner(choice, randomChoice);
+
+    setPlayerChoice(choice);
+    setAiChoice(randomChoice);
+
+    if (roundResult === 'draw') {
+      setResult('Draw! No one gets a point.');
+      return;
     }
-    return null;
+
+    if (roundResult === 'player') {
+      setResult(`You win! ${choice} beats ${randomChoice}.`);
+      setScore((prev) => ({ ...prev, player: prev.player + 1 }));
+      return;
+    }
+
+    setResult(`You lose! ${randomChoice} beats ${choice}.`);
+    setScore((prev) => ({ ...prev, ai: prev.ai + 1 }));
   };
-
-  const handleClick = (index) => {
-    if (board[index] || winner) return;
-
-    const nextBoard = [...board];
-    nextBoard[index] = turn;
-    const nextWinner = checkWinner(nextBoard);
-
-    setBoard(nextBoard);
-    setWinner(nextWinner);
-    setTurn(turn === 'X' ? 'O' : 'X');
-  };
-
-  const resetBoard = () => {
-    setBoard(Array(9).fill(null));
-    setWinner(null);
-    setTurn('X');
-  };
-
-  const statusText = winner
-    ? `Winner: ${winner}`
-    : isDraw
-      ? 'Draw game!'
-      : `Current turn: ${turn}`;
 
   return (
     <div className="section-wrap game-page">
       <div className="panel game-header">
         <div>
           <p className="eyebrow">Game Room</p>
-          <h2>Tic-Tac-Toe</h2>
+          <h2>Rock Paper Scissors</h2>
         </div>
-        <div className="header-actions">
-          <button className="ghost-btn" onClick={onBack}>Back to Lobby</button>
-          <button className="secondary-btn" onClick={resetBoard}>Reset</button>
-        </div>
+        <button className="ghost-btn" onClick={onBack}>Back to Lobby</button>
       </div>
 
       <div className="game-layout">
-        <div className="panel game-panel">
-          <div className="board" role="grid">
-            {board.map((cell, index) => (
-              <button
-                key={index}
-                className="cell"
-                onClick={() => handleClick(index)}
-                aria-label={`Cell ${index + 1}`}
-              >
-                {cell}
+        <div className="panel game-panel rps-panel">
+          <div className="score-row">
+            <div>
+              <span className="label">You</span>
+              <strong>{score.player}</strong>
+            </div>
+            <div>
+              <span className="label">AI</span>
+              <strong>{score.ai}</strong>
+            </div>
+          </div>
+
+          <div className="choices-row">
+            {choices.map((choice) => (
+              <button key={choice} className="choice-btn" onClick={() => playRound(choice)}>
+                {choice}
               </button>
             ))}
+          </div>
+
+          <div className="rps-result">
+            <p>{result}</p>
+            {playerChoice && aiChoice && (
+              <strong>
+                You picked {playerChoice} • AI picked {aiChoice}
+              </strong>
+            )}
           </div>
         </div>
 
         <aside className="panel side-panel">
           <h3>{user.name}</h3>
-          <p className="muted">Match status</p>
-          <div className="status-box">{statusText}</div>
+          <p className="muted">Rules</p>
           <ul className="rules-list">
-            <li>First to connect 3 wins</li>
-            <li>Alternate turns between X and O</li>
-            <li>Use smart placement to block your rival</li>
+            <li>Rock beats Scissors</li>
+            <li>Paper beats Rock</li>
+            <li>Scissors beats Paper</li>
           </ul>
         </aside>
       </div>
@@ -96,4 +98,4 @@ function TicTacToe({ user, onBack }) {
   );
 }
 
-export default TicTacToe;
+export default RockPaperScissors;
