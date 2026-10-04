@@ -1,0 +1,1169 @@
+<!-- UFALAOS V16 COMPLETE GAME DEMO: Duck Flight + Reel Demo + 200-game lobby -->
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#09070d">
+<meta name="description" content="V16 Arcade - เว็บเกมคะแนน">
+<title>V16 Arcade Game Demo</title>
+<style>
+:root{--bg:#09070d;--panel:#15111b;--panel2:#1d1626;--line:#3a2a46;--gold:#e8bd58;--text:#faf7ff;--muted:#afa3b9;--ok:#63d49a}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at 80% -10%,#422253 0,#130d19 35%,#09070d 72%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",system-ui,sans-serif}
+button,input{font:inherit}button{border:0;border-radius:12px;padding:11px 15px;background:#30203c;color:#fff;font-weight:800;cursor:pointer;touch-action:manipulation}button:hover{filter:brightness(1.06)}button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}button:disabled{opacity:.55;cursor:not-allowed;filter:none}button.primary{background:linear-gradient(135deg,#e5bb57,#a97823);color:#17100a}button.ghost{background:transparent;border:1px solid #4b3658}
+header{height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;background:#0a070ee8;border-bottom:1px solid #30213a;position:sticky;top:0;z-index:20}
+.logo{font-size:23px;font-weight:900}.logo span{color:var(--gold)}.wallet{background:#21172b;border:1px solid #493357;border-radius:14px;padding:8px 12px;font-size:13px}.wallet b{color:var(--gold)}
+nav{display:flex;gap:8px;padding:11px 14px;background:#0f0b14;border-bottom:1px solid #281b31;overflow:auto;position:sticky;top:68px;z-index:15}nav button{white-space:nowrap}
+.page{display:none;max-width:1100px;margin:auto}.page.active{display:block}.hero{margin:18px;border:1px solid #4a3457;border-radius:24px;padding:26px;background:linear-gradient(135deg,#532a6aeB,#1c1127F2)}
+h1{margin:0 0 7px;font-size:30px}h2{margin:0 0 8px}.muted{color:var(--muted)}.chips{display:flex;gap:7px;flex-wrap:wrap;margin:14px 0}.chip{background:#24172e;border:1px solid #493255;border-radius:999px;padding:6px 10px;font-size:12px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:18px}.card{background:linear-gradient(180deg,#1b1422,#120d17);border:1px solid #33233d;border-radius:20px;padding:18px;min-height:145px}.icon{font-size:42px}.card h3{margin:8px 0 5px}
+.game{margin:18px;padding:20px;background:linear-gradient(180deg,#1c1424,#0f0a14);border:1px solid #4a3357;border-radius:24px;text-align:center}.reels{display:flex;justify-content:center;gap:9px;margin:24px 0}.reel{width:82px;height:82px;display:grid;place-items:center;border-radius:17px;background:#21152c;border:1px solid #654678;font-size:38px}.result{min-height:28px;font-weight:900;margin-bottom:10px}.actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.statgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:16px}.stat{background:#19121f;border:1px solid #34233e;border-radius:16px;padding:15px}.stat b{font-size:22px;color:var(--gold)}
+.notice{margin:18px;padding:0 0 25px;color:#8f8497;font-size:12px;text-align:center}.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:#21172b;border:1px solid #59406a;padding:12px 18px;border-radius:12px;opacity:0;pointer-events:none;transition:.25s;z-index:100}.toast.show{opacity:1;transform:translate(-50%,0)}
+input{background:#100c15;color:#fff;border:1px solid #493357;border-radius:10px;padding:12px;outline:none}.chatbox{margin-top:14px;min-height:100px;background:#100c15;border:1px solid #33233d;border-radius:14px;padding:12px;white-space:pre-wrap}.chatrow{display:flex;gap:8px;margin-top:12px}.chatrow input{flex:1}
+@media(min-width:800px){.grid{grid-template-columns:repeat(4,1fr)}.statgrid{grid-template-columns:repeat(4,1fr)}}@media(max-width:560px){header{height:62px}.logo{font-size:20px}nav{top:62px}.hero{margin:12px;padding:21px}.grid{padding:12px}.reel{width:70px;height:70px;font-size:32px}.chatrow{flex-direction:column}}
+.nav-active{outline:1px solid var(--gold);background:#3a2945!important}
+table{width:100%;border-collapse:collapse;margin-top:16px;background:#100c15;border-radius:14px;overflow:hidden}
+th,td{text-align:left;padding:12px;border-bottom:1px solid #30213a}
+th{color:var(--gold)}
+.status{margin-top:12px;font-size:12px;color:var(--muted)}
+@media(max-width:560px){table{font-size:13px}}
+
+.quickbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.history{margin-top:14px;background:#100c15;border:1px solid #33233d;border-radius:14px;padding:12px;max-height:220px;overflow:auto}
+.history div{padding:7px 0;border-bottom:1px solid #261b2f;font-size:13px}
+.badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#24172e;border:1px solid #493255;font-size:11px}
+.compact .card,.compact .game,.compact .hero{border-radius:12px;padding:14px}
+.compact h1{font-size:25px}
+.compact .reel{width:64px;height:64px;font-size:29px}
+.game-category-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:18px}
+.category-card{background:linear-gradient(180deg,#1b1422,#120d17);border:1px solid #4a3357;border-radius:20px;padding:18px;min-height:170px;display:flex;flex-direction:column;justify-content:space-between}
+.category-card .icon{font-size:38px}.category-count{color:var(--gold);font-weight:800;font-size:12px}
+.catalog-toolbar{display:flex;gap:10px;flex-wrap:wrap;padding:0 18px 18px}.catalog-toolbar input{flex:1;min-width:180px}
+.game-catalog{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:0 18px 24px}
+.game-tile{background:#15101c;border:1px solid #382843;border-radius:18px;padding:14px}
+.game-tile .game-art{font-size:42px;margin-bottom:8px}.game-tile h3{margin:0 0 5px}.game-tile p{margin:0 0 12px;font-size:12px}
+@media(min-width:800px){.game-category-grid{grid-template-columns:repeat(5,1fr)}.game-catalog{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:560px){.game-category-grid,.game-catalog{padding-left:12px;padding-right:12px}}
+
+
+.demo-bank{background:#f7fbff;border:1px solid #d7e8ff;border-radius:14px;padding:14px;line-height:1.65}.qr-demo{margin-top:14px;width:170px;height:170px;border:3px dashed #8bb7e8;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#2468ad;font-weight:800;background:#fff}.qr-demo small{font-weight:600;font-size:10px;padding:0 10px}.btnrow{display:flex;flex-wrap:wrap;gap:8px}
+</style>
+
+<style id="ufalaos-modern-lobby">
+:root{--bg:#f4f8ff;--panel:#fff;--text:#12213a;--muted:#6d7c93;--blue:#1769e0;--blue2:#39a0ff;--line:#e5edf8;--shadow:0 12px 30px rgba(28,72,130,.10)}
+html,body{background:var(--bg)!important;color:var(--text)!important}
+body{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important}
+header{background:rgba(255,255,255,.96)!important;border-bottom:1px solid var(--line)!important;box-shadow:0 4px 18px rgba(28,72,130,.07)!important}
+.logo{color:#123b78!important}.logo span{color:var(--blue)!important}.wallet{background:#edf5ff!important;border:1px solid #d7e8ff!important;color:#1557b8!important}
+.hero{background:linear-gradient(135deg,#eaf4ff,#fff)!important;border:1px solid #dceaff!important;box-shadow:var(--shadow)!important}
+.card,.category-card,.game-tile,.game{background:var(--panel)!important;border:1px solid var(--line)!important;box-shadow:var(--shadow)!important;color:var(--text)!important}
+.muted{color:var(--muted)!important}
+button.primary,.auth-main-btn{background:linear-gradient(135deg,var(--blue),var(--blue2))!important;border:0!important}
+.game-catalog{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:14px!important}
+.game-tile{padding:0!important;overflow:hidden;border-radius:20px!important;min-height:245px!important;display:flex!important;flex-direction:column!important}
+.game-tile .game-art{height:155px!important;margin:0!important;display:flex!important;align-items:center!important;justify-content:center!important;font-size:72px!important;background:linear-gradient(135deg,#dff0ff,#f7fbff)!important;border-bottom:1px solid var(--line)!important}
+.game-tile h3,.game-tile p,.game-tile button{margin-left:14px!important;margin-right:14px!important}.game-tile h3{margin-top:12px!important;margin-bottom:4px!important}.game-tile p{min-height:34px!important}.game-tile button{margin-top:auto!important;margin-bottom:14px!important;width:calc(100% - 28px)!important}
+.category-card{border-radius:18px!important}
+nav{background:#fff!important;border-top:1px solid var(--line)!important}
+nav a{color:#60708a!important}nav a.active{color:var(--blue)!important}
+@media(min-width:800px){.game-catalog{grid-template-columns:repeat(5,minmax(0,1fr))!important}.game-tile{min-height:285px!important}.game-tile .game-art{height:190px!important;font-size:82px!important}}
+@media(max-width:560px){.game-catalog{padding-left:10px!important;padding-right:10px!important;gap:10px!important}.game-tile{min-height:230px!important;border-radius:16px!important}.game-tile .game-art{height:135px!important;font-size:62px!important}}
+#gameSearch{background:#fff!important;border:1px solid #dce7f5!important;color:var(--text)!important;border-radius:14px!important}
+.notice{background:#fff!important;border:1px solid var(--line)!important;color:var(--muted)!important}
+</style>
+
+<style id="v16-reference-lobby">
+body{padding-bottom:72px!important}
+.hero{border-radius:22px!important;background:linear-gradient(135deg,#e8f4ff 0%,#ffffff 72%)!important}
+.hero h1{font-size:clamp(25px,6vw,34px)!important;color:#123b78!important}
+.game-category-grid{display:flex!important;overflow-x:auto!important;gap:10px!important;padding:2px 12px 18px!important;scroll-snap-type:x mandatory!important}
+.category-card{min-width:180px!important;scroll-snap-align:start!important;padding:15px!important;box-shadow:0 8px 24px rgba(28,72,130,.08)!important}
+.catalog-toolbar{position:sticky!important;top:62px!important;z-index:10!important;background:#f4f8ff!important;padding-top:8px!important}
+.game-catalog{padding-top:4px!important}
+.game-tile{transition:transform .15s ease,box-shadow .15s ease!important}
+.game-tile:active{transform:scale(.98)!important}
+.mobile-bottom-nav{position:fixed;left:0;right:0;bottom:0;height:64px;z-index:60;display:flex;justify-content:space-around;align-items:center;background:rgba(255,255,255,.97);border-top:1px solid #dfe9f5;box-shadow:0 -8px 25px rgba(28,72,130,.10);padding-bottom:env(safe-area-inset-bottom)}
+.mobile-bottom-nav button{background:transparent!important;color:#66768f!important;padding:5px 10px!important;border-radius:12px!important;font-size:20px!important;display:flex;flex-direction:column;align-items:center;gap:2px!important}
+.mobile-bottom-nav button span{font-size:10px!important;font-weight:700!important}
+@media(min-width:800px){.mobile-bottom-nav{display:none}.game-category-grid{display:grid!important;overflow:visible!important;grid-template-columns:repeat(5,1fr)!important;padding:18px!important}.category-card{min-width:0!important}}
+</style>
+
+<style id="v16-realistic-lobby">
+:root{--v16-navy:#081a33;--v16-blue:#1769d2;--v16-gold:#d9b15a;--v16-bg:#f4f7fb;--v16-card:#fff}
+body{background:linear-gradient(180deg,#f7f9fc,#eef3f9)!important;color:#142033!important}
+.game-tile{background:#fff!important;border:1px solid #d9e3ef!important;border-radius:16px!important;box-shadow:0 6px 20px rgba(14,40,70,.08)!important;overflow:hidden!important}
+.game-tile .game-art{height:118px!important;border-radius:12px;background:radial-gradient(circle at 50% 25%,#294d7e,#071426 68%)!important;color:#e8c56d!important;display:grid;place-items:center;font-weight:900;letter-spacing:1px}
+.provider-pill{display:inline-block;padding:4px 8px;border-radius:999px;background:#eef5ff;color:#1769d2;font-size:11px;font-weight:800;margin-top:4px}
+#v16ReelOverlay{position:fixed;inset:0;z-index:10000;background:rgba(3,12,25,.88);display:none;align-items:center;justify-content:center;padding:12px}
+#v16ReelOverlay.open{display:flex}
+.v16-reel-shell{width:min(960px,100%);background:linear-gradient(180deg,#0d2340,#071426);border:1px solid #355477;border-radius:22px;padding:16px;box-shadow:0 25px 80px rgba(0,0,0,.45);color:#fff}
+.v16-reel-head{display:flex;justify-content:space-between;align-items:center;gap:12px}.v16-reel-head small{color:#a9bdd6}
+.v16-reels{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:14px 0;background:#050e1c;padding:8px;border-radius:14px}
+.v16-col{display:grid;grid-template-rows:repeat(4,1fr);gap:5px}.v16-cell{height:76px;display:grid;place-items:center;background:linear-gradient(180deg,#172f50,#0c1d33);border:1px solid #35506f;border-radius:8px;color:#e8d18a;font-size:23px;font-weight:900}.v16-cell.win{outline:2px solid #e5bd59;box-shadow:0 0 18px rgba(229,189,89,.45)}
+.v16-controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center}.v16-controls button{min-height:42px}.v16-status{text-align:center;min-height:25px;color:#d7e5f6;font-weight:800}
+@media(max-width:600px){.v16-cell{height:58px;font-size:17px}.v16-reel-shell{padding:10px}.v16-reels{gap:4px;padding:5px}.v16-col{gap:4px}}
+</style>
+<style id="duck-flight-demo">
+#duckFlightOverlay{position:fixed;inset:0;background:rgba(8,22,42,.72);z-index:9999;display:none;align-items:center;justify-content:center;padding:12px}
+#duckFlightOverlay.open{display:flex}
+.df-card{width:min(560px,100%);background:#fff;border:1px solid #dbe8f7;border-radius:24px;box-shadow:0 24px 70px rgba(0,0,0,.28);overflow:hidden;color:#12213a}
+.df-head{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid #e5edf8}.df-head b{font-size:18px}.df-close{background:#eef5ff;color:#1769e0;padding:8px 11px;border-radius:10px}
+.df-stage{position:relative;height:300px;overflow:hidden;background:linear-gradient(#dff4ff 0%,#f7fcff 62%,#d7edc7 63%,#a9d88d 100%)}
+.df-cloud{position:absolute;font-size:42px;opacity:.72;animation:dfCloud 9s linear infinite}.df-c1{top:32px;left:8%}.df-c2{top:92px;left:58%;animation-delay:-4s}.df-c3{top:155px;left:30%;animation-delay:-7s}
+@keyframes dfCloud{from{transform:translateX(0)}to{transform:translateX(70px)}}
+#dfDuck{position:absolute;left:16%;top:56%;font-size:58px;filter:drop-shadow(0 8px 8px rgba(0,0,0,.15));transition:transform .12s linear}
+.df-track{position:absolute;left:0;right:0;bottom:22px;height:3px;background:rgba(23,105,224,.2)}
+.df-mult{position:absolute;inset:35px 0 auto;text-align:center;font-size:54px;font-weight:900;color:#1769e0;text-shadow:0 2px 0 #fff}.df-state{position:absolute;left:0;right:0;bottom:10px;text-align:center;font-size:12px;color:#41617f}
+.df-controls{padding:14px 16px}.df-score{display:flex;justify-content:space-between;gap:8px;margin-bottom:12px}.df-score div{flex:1;background:#f4f8ff;border:1px solid #e1ebf7;border-radius:14px;padding:9px;text-align:center}.df-score b{display:block;font-size:18px;color:#1769e0}.df-actions{display:flex;gap:8px}.df-actions button{flex:1}.df-note{font-size:11px;color:#71839a;text-align:center;margin:10px 0 0}
+</style>
+
+
+<style id="v16-realistic-shell">
+.game-tile{transition:transform .16s ease,box-shadow .16s ease}.game-tile:hover{transform:translateY(-3px);box-shadow:0 14px 32px rgba(28,72,130,.14)}
+.v16-game-detail{display:grid;grid-template-columns:160px 1fr;gap:18px;align-items:center;background:#fff;border:1px solid #e1ebf8;border-radius:20px;padding:18px;box-shadow:0 12px 30px rgba(28,72,130,.08)}
+.v16-game-detail .art{height:160px;border-radius:18px;display:grid;place-items:center;font-size:72px;background:linear-gradient(145deg,#eaf5ff,#d9ecff)}
+.v16-game-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}.v16-game-actions button{min-height:42px}
+.v16-session{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.v16-chip{padding:7px 10px;border-radius:999px;background:#eef5ff;color:#1769d2;font-size:12px;font-weight:800}
+@media(max-width:600px){.v16-game-detail{grid-template-columns:1fr}.v16-game-detail .art{height:130px}}
+</style>
+
+<style id="v16-final-polish">
+/* V16 final lobby polish: denser, clearer, mobile-first */
+.game-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important}
+.game-card,.game-tile{min-height:180px!important;border-radius:16px!important;overflow:hidden}
+.game-card img,.game-tile img{width:100%;aspect-ratio:1.25/1;object-fit:cover}
+.category-row,.categories{overflow-x:auto!important;scrollbar-width:none;display:flex;gap:8px!important;white-space:nowrap}
+.category-row::-webkit-scrollbar,.categories::-webkit-scrollbar{display:none}
+@media(min-width:760px){.game-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:16px!important}.game-card,.game-tile{min-height:230px!important}}
+</style>
+
+<style id="safe-arcade-overrides">
+body{background:#f6f9ff!important;color:#17324d!important}
+header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.96)!important;border-bottom:1px solid #e3edf8!important}
+.logo span{color:#1769e0!important}.wallet{background:#eef6ff!important;border:1px solid #d6e7fb!important;color:#1769e0!important}
+.hero{border-radius:22px!important}.game-card,.game-tile{box-shadow:0 8px 24px rgba(23,76,132,.08)!important}
+.arcade-badge{display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border-radius:999px;background:#eaf4ff;color:#1769e0;font-size:12px;font-weight:800}
+.safe-game-panel{margin-top:14px;background:#fff;border:1px solid #dfeaf6;border-radius:20px;padding:16px;box-shadow:0 10px 28px rgba(23,76,132,.07)}
+.safe-game-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:12px}
+.safe-game{border:1px solid #e2ecf7;border-radius:18px;overflow:hidden;background:#fff}
+.safe-art{aspect-ratio:1.35/1;display:grid;place-items:center;font-size:52px;background:linear-gradient(145deg,#e9f4ff,#dcecff)}
+.safe-game .body{padding:12px}.safe-game h3{margin:0 0 5px;font-size:16px}.safe-game p{margin:0 0 10px;font-size:12px;color:#657b92}
+.safe-btn{width:100%;border:0;border-radius:12px;padding:10px;background:#1769e0;color:#fff;font-weight:800}
+@media(min-width:760px){.safe-game-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+</style>
+<style id="hide-legacy-wagering">
+#slot,#roulette,#baccarat,#fishing,#lottery,#topup,#admin{display:none!important}
+</style>
+</head>
+<body>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<header><div class="logo">UFA<span>Laos</span> 3999</div><div class="wallet">🪙 <b id="bal">1,000</b> คะแนน</div></header>
+<nav aria-label="เมนูหลัก">
+<button aria-label="หน้าแรก" data-go="home">⌂ หน้าแรก</button><button data-go="games">🎮 เกม</button><button data-go="promo">🎁 กิจกรรม</button><button data-go="rank">🏆 อันดับ</button><button data-go="chat">💬 แชต</button><button data-go="profile">👤 โปรไฟล์</button><button data-go="history">📜 ประวัติ</button><button data-go="topup">💳 เติมคะแนน Demo</button><button data-go="achievements">🏅 ความสำเร็จ</button><button data-go="admin">⚙️ จัดการ</button><button data-go="help">❓ ช่วยเหลือ</button><button data-go="member-ufa-999">👤 โปรไฟล์ผู้เล่น</button><button data-go="settings">⚙️ ตั้งค่า V16</button>
+</nav>
+
+<section id="home" class="page active">
+<div class="hero"><div class="chip">V16 Arcade</div><h1>ยินดีต้อนรับ</h1><p class="muted">ศูนย์รวมเกมและกิจกรรมในโลกของ V16 Arcade</p><div class="chips"><span class="chip">🟢 ออนไลน์ 128</span><span class="chip">กิจกรรมวันนี้</span><span class="chip">โบนัสประจำวัน</span></div><div class="statgrid">
+<div class="stat"><b id="homeBal">1,000</b><br>คะแนน</div>
+<div class="stat"><b id="homePlays">0</b><br>รอบเล่น</div>
+<div class="stat"><b id="homeHistory">0</b><br>ประวัติ</div>
+<div class="stat"><b>✓</b><br>ระบบพร้อม</div>
+</div><button class="primary" data-go="games">เข้าสู่เกม</button>
+<div class="quickbar">
+<button onclick="daily()">🎁 โบนัส +100</button>
+<button class="ghost" data-go="history">📜 ประวัติ</button>
+<button class="ghost" data-go="profile">👤 โปรไฟล์</button>
+</div></div>
+<div class="grid">
+<div class="card"><div class="icon">🎰</div><h3>สล็อต</h3><p class="muted">วงล้อสุ่มเพื่อความบันเทิง</p><button data-go="slot">เข้าเล่น</button></div>
+<div class="card"><div class="icon">🎡</div><h3>รูเล็ต</h3><p class="muted">สุ่มหมายเลข 0–36</p><button data-go="roulette">เข้าเล่น</button></div>
+<div class="card"><div class="icon">🎁</div><h3>โบนัส</h3><p class="muted">รับคะแนนทดลอง</p><button onclick="daily()">รับโบนัส</button></div>
+<div class="card"><div class="icon">🏆</div><h3>อันดับ</h3><p class="muted">ดูคะแนนผู้เล่น</p><button data-go="rank">ดูอันดับ</button></div>
+</div></section>
+
+<section id="games" class="page">
+  <div class="hero">
+    <h1>🎮 ศูนย์เกม 10 หมวด</h1>
+    <p class="muted">เลือกหมวดเกมเพื่อดูรายการเกมของหมวดนั้น ระบบนี้ต่อยอดจาก V8 เดิม</p>
+  </div>
+  <div id="categoryGrid" class="game-category-grid"></div>
+</section>
+
+<section id="catalog" class="page">
+  <div class="hero">
+    <button class="ghost" data-go="games">← กลับไปหมวดเกม</button>
+    <h1 id="catalogTitle" style="margin-top:12px">🎮 รายการเกม</h1>
+    <p id="catalogDesc" class="muted">เลือกเกมเพื่อเล่นหรือเปิดโหมดเกม</p>
+  </div>
+  <div class="catalog-toolbar">
+    <input id="gameSearch" placeholder="🔎 ค้นหาเกมในหมวดนี้" oninput="renderCatalog()">
+    <button class="ghost" onclick="clearGameSearch()">ล้างค้นหา</button>
+  </div>
+  <div id="gameCatalog" class="game-catalog">
+<div class="safe-game-grid">
+<div class="safe-game"><div class="safe-art">🦆</div><div class="body"><h3>Duck Flight</h3><p>หลบสิ่งกีดขวางและทำคะแนน</p><button class="safe-btn" onclick="openDemoGame('duck','Duck Flight')">เล่นเกม</button></div></div>
+<div class="safe-game"><div class="safe-art">🎯</div><div class="body"><h3>Target Tap</h3><p>แตะเป้าหมายให้แม่นและเร็ว</p><button class="safe-btn" onclick="openDemoGame('target','Target Tap')">เล่นเกม</button></div></div>
+<div class="safe-game"><div class="safe-art">🧠</div><div class="body"><h3>Memory Match</h3><p>จับคู่ภาพเพื่อสะสมคะแนน</p><button class="safe-btn" onclick="openDemoGame('memory','Memory Match')">เล่นเกม</button></div></div>
+<div class="safe-game"><div class="safe-art">⚡</div><div class="body"><h3>Reflex Rush</h3><p>ตอบสนองให้ทันเวลา</p><button class="safe-btn" onclick="openDemoGame('reflex','Reflex Rush')">เล่นเกม</button></div></div>
+</div></div>
+</section>
+
+<section id="slot" class="page"><div class="game"><h2>🎰 สล็อตจำลอง</h2><p class="muted">เล่นฟรีเพื่อทำคะแนน</p><div class="reels"><div class="reel" id="r1">🍒</div><div class="reel" id="r2">⭐</div><div class="reel" id="r3">7️⃣</div></div><div id="slotResult" class="result">พร้อมเล่น</div><button class="primary" onclick="spin()">เล่นรอบฟรี</button> <button data-go="games">กลับ</button></div></section>
+
+<section id="roulette" class="page"><div class="game"><h2>🎡 รูเล็ตจำลอง</h2><p class="muted">สุ่มคะแนนเพื่อความบันเทิง</p><div class="reel" style="margin:20px auto" id="rouletteNum">?</div><div id="rouletteResult" class="result">พร้อมเล่น</div><button class="primary" onclick="roulette()">เล่นรอบฟรี</button> <button data-go="games">กลับ</button></div></section>
+
+
+<section id="baccarat" class="page"><div class="game">
+<h2>🃏 บาคาร่า</h2><p class="muted">เกมคะแนน</p>
+<div class="reels"><div class="reel" id="baccPlayer">?</div><div class="reel" id="baccBanker">?</div></div>
+<div id="baccResult" class="result">พร้อมเล่น</div>
+<button class="primary" onclick="baccarat()">แจกไพ่</button> <button data-go="games">กลับ</button>
+</div></section>
+
+<section id="fishing" class="page"><div class="game">
+<h2>🎣 เกมตกปลา</h2><p class="muted">เล่นฟรี</p>
+<div class="reel" style="margin:20px auto" id="fishIcon">🐟</div>
+<div id="fishResult" class="result">พร้อมเล่น</div>
+<button class="primary" onclick="fishing()">ตกปลา</button> <button data-go="games">กลับ</button>
+</div></section>
+
+<section id="lottery" class="page"><div class="game">
+<h2>🎟️ หวยทดลอง</h2><p class="muted">เกมตัวเลขฝึกทักษะ</p>
+<div class="reel" style="margin:20px auto;width:160px" id="lotteryNum">---</div>
+<div id="lotteryResult" class="result">พร้อมเล่น</div>
+<button class="primary" onclick="lottery()">สุ่มเลข</button> <button data-go="games">กลับ</button>
+</div></section>
+
+<section id="topup" class="page"><div class="hero"><h1>💳 เติมคะแนน Demo</h1><p class="muted">หน้านี้เป็นระบบสาธิตเท่านั้น ไม่มีการโอนเงินจริงและไม่เชื่อมบัญชีธนาคารจริง</p><div class="card" style="margin-top:14px"><h3>🏦 บัญชีธนาคารสาธิต</h3><div class="demo-bank"><p><b>ธนาคาร:</b> DEMO BANK</p><p><b>ชื่อบัญชี:</b> UFALAOS DEMO ACCOUNT</p><p><b>เลขบัญชี:</b> 000-0-00000-0</p><p class="muted">ข้อมูลทั้งหมดด้านบนเป็นข้อมูลสมมติสำหรับทดสอบ UI เท่านั้น</p></div><div class="qr-demo">QR DEMO<br><small>ไม่ใช่ QR สำหรับชำระเงินจริง</small></div></div><div class="card" style="margin-top:14px"><h3>เลือกคะแนนจำลอง</h3><div class="btnrow"><button onclick="demoTopup(1000)">+1,000 คะแนน</button><button onclick="demoTopup(5000)">+5,000 คะแนน</button><button onclick="demoTopup(10000)">+10,000 คะแนน</button></div><p id="topupResult" class="status" style="margin-top:12px">ยังไม่มีรายการเติมคะแนน Demo</p></div></div></section>
+<section id="history" class="page"><div class="hero">
+<h1>📜 ประวัติการเล่น</h1><p class="muted">คะแนนทดลองซิงก์กับ Supabase ส่วนประวัติ/การตั้งค่าบางส่วนเก็บในเครื่องนี้</p>
+<div id="historyBox" class="history">ยังไม่มีประวัติ</div>
+</div></section>
+
+<section id="promo" class="page"><div class="hero"><h1>🎁 กิจกรรม</h1><p class="muted">กิจกรรมและโบนัสสำหรับคะแนนทดลอง</p><div class="statgrid"><div class="stat"><b>+100</b><br>โบนัสรายวัน</div><div class="stat"><b>+50</b><br>รางวัลกิจกรรม</div></div><br><div class="quickbar"><button class="primary" onclick="daily()">รับโบนัสรายวัน</button><button id="activityBtn" onclick="claimActivity()">✨ รางวัลกิจกรรม +50</button></div><div id="activityStatus" class="status">พร้อมรับรางวัลกิจกรรม</div></div></section>
+
+
+<section id="help" class="page"><div class="hero">
+<h1>❓ ช่วยเหลือ</h1>
+<p class="muted">คู่มือการใช้งานระบบ</p>
+<div class="card"><h3>🎮 การเล่น</h3><p class="muted">เลือกเกมจากหน้าเกม แล้วกดปุ่มเล่น ระบบจะหักคะแนนทดลองและบันทึกผลไว้ในเครื่อง</p></div>
+<div class="card"><h3>💾 ข้อมูล</h3><p class="muted">คะแนน ประวัติ และข้อความแชตของเวอร์ชันนี้เก็บด้วย localStorage ในเบราว์เซอร์เครื่องนี้</p></div>
+<div class="card"><h3>⚙️ จัดการ</h3><p class="muted">หน้า “จัดการ” ใช้เพิ่มคะแนนและรีเซ็ตข้อมูลสำหรับการจัดการเวอร์ชันนี้</p></div>
+</div></section>
+
+<section id="achievements" class="page"><div class="hero">
+<h1>🏅 ความสำเร็จ</h1>
+<p class="muted">สถิติความคืบหน้าจากการเล่นบนเครื่องนี้</p>
+<div class="statgrid">
+<div class="stat"><b id="achPlays">0</b><br>รอบทั้งหมด</div>
+<div class="stat"><b id="achBal">1,000</b><br>คะแนน</div>
+<div class="stat"><b id="achHistory">0</b><br>รายการประวัติ</div>
+<div class="stat"><b id="achChat">0</b><br>ข้อความแชต</div>
+</div>
+<div id="achievementList" class="history" aria-live="polite"></div>
+</div></section>
+
+<section id="rank" class="page"><div class="hero"><h1>🏆 อันดับ</h1><p class="muted">อันดับทดสอบในเครื่อง คำนวณจากคะแนนทดลองของโปรไฟล์นี้</p><table><thead><tr><th>#</th><th>ผู้เล่น</th><th>คะแนน</th></tr></thead><tbody id="rankBody"></tbody></table></div></section>
+
+<section id="chat" class="page"><div class="hero"><h1>💬 แชต</h1><p class="muted">แชตภายในเครื่องสำหรับทดสอบ UI</p><div id="chatbox" class="chatbox">ระบบ: ยินดีต้อนรับสู่ V16 Arcade</div><div class="chatrow"><input id="msg" placeholder="พิมพ์ข้อความ"><button class="primary" onclick="sendChat()">ส่ง</button></div></div></section>
+
+
+<section id="admin" class="page"><div class="hero">
+<h1>⚙️ ศูนย์จัดการทดสอบ</h1>
+<p class="muted">เครื่องมือสำหรับจัดการข้อมูลคะแนนของโปรเจกต์ในเครื่องนี้</p>
+<div class="statgrid">
+<div class="stat"><b id="adminBal">1,000</b><br>คะแนนทดลอง</div>
+<div class="stat"><b id="adminPlays">0</b><br>รอบที่เล่น</div>
+</div>
+<div class="quickbar">
+<button class="primary" onclick="adminAdd(100)">+100 คะแนน</button>
+<button onclick="adminAdd(1000)">+1,000 คะแนน</button>
+<button onclick="adminAdd(10000)">+10,000 คะแนน</button>
+<button class="ghost" onclick="adminReset()">รีเซ็ตข้อมูล</button>
+</div>
+<div class="status">การเปลี่ยนแปลงมีผลเฉพาะข้อมูลในเบราว์เซอร์นี้</div>
+</div></section>
+
+<section id="profile" class="page"><div class="hero"><h1>👤 โปรไฟล์</h1><p class="muted">ผู้เล่น</p><div class="statgrid"><div class="stat"><b id="profileBal">1,000</b><br>คะแนน</div><div class="stat"><b id="plays">0</b><br>รอบที่เล่น</div></div><div class="status">Session ใช้ Supabase Auth และคะแนนทดลองซิงก์กับ Demo Wallet บน Supabase; ข้อมูล UI บางส่วนยังใช้ localStorage</div>
+<div class="status" id="sessionStatus">สถานะระบบ: พร้อมใช้งาน</div><br><button class="ghost" onclick="resetDemo()">รีเซ็ตข้อมูล</button> <button onclick="exportState()">📦 ส่งออกข้อมูล</button></div></section>
+
+
+<section id="member-ufa-999" class="page"><div class="hero">
+<h1>👤 โปรไฟล์ผู้เล่น</h1>
+<p class="muted">หน้าทางเข้า Member สำหรับ V16 Arcade V16</p>
+<div class="card"><h2>ทางเข้า Member</h2>
+<p class="muted">หน้านี้เป็น Frontend entry point เท่านั้น ระบบ Admin และข้อมูลผู้ใช้ยังคงควบคุมโดย V16 / Supabase ของเรา</p>
+<div class="status">ยังไม่มีการฝังโค้ด ฐานข้อมูล เซสชัน หรือข้อมูลเข้าสู่ระบบจากระบบภายนอก</div>
+<button class="ghost" disabled>ลิงก์ภายนอกยังไม่ได้ตั้งค่า</button>
+</div></div></section>
+
+<section id="settings" class="page"><div class="hero">
+<h1>⚙️ ตั้งค่า V16</h1>
+<p class="muted">การตั้งค่าสำหรับเวอร์ชันทดสอบนี้เก็บไว้ในเบราว์เซอร์เครื่องนี้</p>
+<div class="statgrid">
+  <div class="stat"><b id="v10Version">V16</b><br>เวอร์ชัน</div>
+  <div class="stat"><b id="v11Storage">พร้อม</b><br>สถานะข้อมูล</div>
+</div>
+<div class="quickbar">
+  <button class="primary" onclick="toggleCompact()">📱 สลับโหมดหน้าจอ</button>
+  <button onclick="exportState()">📦 ส่งออกข้อมูล</button>
+  <button onclick="importStatePrompt()">📥 นำเข้าข้อมูล</button>
+  <button class="ghost" onclick="clearLocalData()">🧹 ล้างข้อมูล V16</button>
+</div>
+<div class="card" style="margin-top:14px">
+  <h3>🤖 ผู้ช่วย ChatGPT</h3>
+  <p class="muted">หน้านี้เตรียมจุดเชื่อมต่อสำหรับผู้ช่วย AI แต่ไฟล์ HTML ฝั่งผู้ใช้ไม่เก็บ API Key เพื่อความปลอดภัย</p>
+  <input id="aiEndpoint" placeholder="Backend URL (ถ้ามี)" style="width:100%">
+  <button style="margin-top:10px" onclick="saveAiEndpoint()">บันทึก Backend URL</button>
+  <div id="aiStatus" class="status">สถานะ: ยังไม่ได้เชื่อมต่อ Backend</div>
+</div>
+</div></section>
+
+<div class="notice" style="margin-top:40px;opacity:.55">หมายเหตุ: คะแนนไม่มีมูลค่าเงินจริง และไม่มีการฝาก ถอน หรือแลกเปลี่ยนเป็นเงินจริง; บัญชีธนาคารในหน้า Demo เป็นข้อมูลสมมติ</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+#authGate{
+  position:fixed;inset:0;z-index:99999;overflow:auto;
+  background:linear-gradient(135deg,#eef8ff 0%,#f8fbff 48%,#eaf5ff 100%);
+  color:#172033;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",system-ui,sans-serif;
+}
+.auth-shell{min-height:100%;display:grid;grid-template-columns:1.15fr minmax(360px,520px) .85fr;gap:30px;align-items:center;padding:28px clamp(18px,4vw,64px)}
+.auth-top{position:absolute;left:0;right:0;top:0;height:70px;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(18px,4vw,64px);background:rgba(255,255,255,.94);border-bottom:1px solid #e3edf7;box-shadow:0 2px 16px rgba(45,90,130,.05)}
+.auth-brand{font-size:25px;font-weight:950;letter-spacing:-.6px;color:#1769e0}.auth-brand span{color:#18a6d9}
+.auth-nav{display:flex;gap:18px;align-items:center;font-size:13px;color:#526174}.auth-nav b{color:#1769e0}
+.auth-credit{background:#f2f8ff;border:1px solid #d7e8f8;border-radius:12px;padding:8px 12px;font-size:12px;color:#526174}.auth-credit strong{color:#1769e0;font-size:15px}
+.auth-left{padding-top:70px}.auth-kicker{display:inline-flex;padding:7px 11px;border-radius:999px;background:#e7f3ff;color:#1769e0;font-weight:800;font-size:12px;margin-bottom:14px}
+.auth-left h1{font-size:clamp(38px,5vw,66px);line-height:1.03;letter-spacing:-2px;margin:0 0 14px;color:#14213a}
+.auth-left h1 span{color:#1769e0}.auth-left p{font-size:18px;line-height:1.65;color:#627086;max-width:560px;margin:0 0 20px}
+.auth-features{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:600px}
+.auth-feature{background:rgba(255,255,255,.78);border:1px solid #dfeaf4;border-radius:16px;padding:13px;box-shadow:0 8px 24px rgba(40,90,130,.05)}
+.auth-feature strong{display:block;font-size:13px;color:#24344d}.auth-feature span{display:block;color:#7a8798;font-size:11px;margin-top:4px}
+.auth-visual{height:210px;max-width:600px;margin-top:20px;border-radius:28px;background:linear-gradient(135deg,#d8efff,#eff9ff);border:1px solid #d3e8f7;position:relative;overflow:hidden}
+.auth-visual:before{content:"";position:absolute;width:260px;height:260px;border-radius:50%;background:#b8e2ff;right:-70px;top:-100px}
+.auth-visual:after{content:"🎮  🎯  🕹️";position:absolute;left:26px;bottom:25px;font-size:38px;letter-spacing:8px}
+.auth-card{margin-top:70px;background:#fff;border:1px solid #dfe8f2;border-radius:26px;padding:30px;box-shadow:0 24px 70px rgba(33,79,120,.15)}
+.auth-card h2{font-size:29px;color:#17243a;margin:0 0 6px}.auth-card .sub{color:#748196;font-size:13px;margin:0 0 20px}
+.auth-field{margin:11px 0}.auth-field label{display:block;font-size:12px;font-weight:800;color:#34435a;margin:0 0 6px}
+.auth-input-wrap{position:relative}.auth-input{width:100%;box-sizing:border-box;padding:13px 44px 13px 14px!important;margin:0!important;background:#fff!important;color:#172033!important;border:1px solid #cfdbe8!important;border-radius:12px!important;font-size:15px!important;outline:none}.auth-input:focus{border-color:#5da7ef!important;box-shadow:0 0 0 3px #e6f3ff}
+.auth-eye{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:transparent!important;color:#738197!important;padding:5px!important;margin:0!important;width:auto!important}
+.auth-row{display:flex;justify-content:space-between;align-items:center;margin:13px 0;font-size:12px}.auth-row a{color:#1769e0;font-weight:800;cursor:pointer}.auth-row label{display:flex;gap:7px;align-items:center;color:#657287}
+.auth-main-btn{width:100%;padding:14px!important;margin:0!important;border:0!important;border-radius:13px!important;background:linear-gradient(135deg,#1769e0,#168fd6)!important;color:#fff!important;font-weight:900!important;font-size:15px!important;box-shadow:0 10px 22px rgba(23,105,224,.20)}
+.auth-divider{display:flex;align-items:center;gap:10px;color:#9aa6b6;font-size:11px;margin:19px 0}.auth-divider:before,.auth-divider:after{content:"";height:1px;background:#e6ebf1;flex:1}
+.auth-social{width:100%;padding:12px!important;margin:6px 0 0!important;background:#fff!important;color:#27354a!important;border:1px solid #d8e1eb!important;border-radius:12px!important;font-weight:800!important}
+.auth-social.line{color:#087f42!important}
+.auth-signup{text-align:center;margin:17px 0 0;color:#748196;font-size:12px}.auth-signup a{color:#1769e0;font-weight:900;cursor:pointer}
+.authmsg{min-height:20px;margin-top:11px;font-size:12px;text-align:center}.auth-right{padding-top:70px}.auth-benefit{background:rgba(255,255,255,.82);border:1px solid #dfeaf4;border-radius:18px;padding:16px;margin:10px 0;display:flex;gap:12px;align-items:flex-start;box-shadow:0 8px 24px rgba(40,90,130,.05)}.auth-benefit .ico{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:#e9f5ff;font-size:20px;flex:none}.auth-benefit strong{display:block;color:#25344c;font-size:14px}.auth-benefit span{display:block;color:#788598;font-size:11px;line-height:1.5;margin-top:3px}
+.auth-foot{position:absolute;bottom:10px;left:0;right:0;text-align:center;color:#9aa6b6;font-size:10px}
+@media(max-width:1050px){.auth-shell{grid-template-columns:1fr minmax(340px,500px)}.auth-right{display:none}.auth-left{padding-top:75px}.auth-features{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:760px){.auth-top{height:62px}.auth-nav{display:none}.auth-shell{display:block;padding:80px 14px 35px}.auth-left{padding-top:0;text-align:center}.auth-left h1{font-size:40px}.auth-left p{font-size:15px}.auth-features{grid-template-columns:1fr 1fr}.auth-visual{height:100px;margin:14px auto}.auth-card{margin:18px auto 0;max-width:500px;padding:22px}.auth-foot{position:static;padding:10px 0 0}}
+@media(max-width:430px){.auth-features{grid-template-columns:1fr}.auth-credit{display:none}.auth-card h2{font-size:25px}}
+</style>
+<div id="authGate">
+  <div class="auth-top">
+    <div class="auth-brand">UFA<span>Laos</span> 3999</div>
+    <div class="auth-nav"><b>หน้าแรก</b><span>เกม</span><span>กิจกรรม</span><span>อันดับ</span><span>แชต</span><span>โปรไฟล์</span></div>
+    <div class="auth-credit">🪙 <strong>1,000</strong> คะแนน</div>
+  </div>
+
+  <div class="auth-shell">
+    <section class="auth-left">
+      <div class="auth-kicker">V16 Arcade</div>
+      <h1>เล่นง่าย <span>สนุกทุกช่วงเวลา</span></h1>
+      <p>รวมทุกเกมในที่เดียว ครบ จบ ที่นี่</p>
+      <div class="auth-features">
+        <div class="auth-feature"><strong>🎮 200+ เกม</strong><span>รวมเกมหลากหลายประเภท</span></div>
+        <div class="auth-feature"><strong>🛡️ ปลอดภัย</strong><span>ระบบบัญชีและเซสชัน</span></div>
+        <div class="auth-feature"><strong>💬 ดูแลตลอด</strong><span>ศูนย์ช่วยเหลือพร้อมใช้งาน</span></div>
+      </div>
+      <div class="auth-visual" aria-hidden="true"></div>
+    </section>
+
+    <section class="auth-card">
+      <h2>เข้าสู่ระบบ</h2>
+      <p class="sub">ยินดีต้อนรับกลับมาสู่ V16 Arcade</p>
+
+      <div class="auth-field">
+        <label for="authEmail">เบอร์โทรศัพท์ / อีเมล</label>
+        <input id="authEmail" class="auth-input" type="text" autocomplete="username" placeholder="กรอกเบอร์โทรศัพท์หรืออีเมล">
+      </div>
+      <div class="auth-field">
+        <label for="authPassword">รหัสผ่าน</label>
+        <div class="auth-input-wrap">
+          <input id="authPassword" class="auth-input" type="password" autocomplete="current-password" placeholder="กรอกรหัสผ่าน">
+          <button type="button" class="auth-eye" id="authEye" aria-label="แสดงรหัสผ่าน">👁</button>
+        </div>
+      </div>
+
+      <div class="auth-row">
+        <label><input id="rememberMe" type="checkbox" checked> จดจำฉันไว้</label>
+        <a id="forgotLink">ลืมรหัสผ่าน?</a>
+      </div>
+      <button id="loginBtn" class="auth-main-btn">เข้าสู่ระบบ</button>
+
+      <div class="auth-divider">หรือ</div>
+      <button id="googleBtn" class="auth-social">🔵 เข้าสู่ระบบด้วย Google</button>
+      <button id="lineBtn" class="auth-social line">🟢 เข้าสู่ระบบด้วย LINE</button>
+
+      <div class="auth-signup">ยังไม่มีบัญชี? <a id="signupBtn">สมัครสมาชิก</a></div>
+      <div id="authMsg" class="authmsg"></div>
+    </section>
+
+    <aside class="auth-right">
+      <div class="auth-benefit"><div class="ico">⚡</div><div><strong>เล่นได้ทันที</strong><span>เข้าสู่ระบบแล้วไปยังหน้าใช้งานหลักได้ทันที</span></div></div>
+      <div class="auth-benefit"><div class="ico">🛡️</div><div><strong>ระบบปลอดภัย</strong><span>Session ถูกจัดการโดย Supabase Auth</span></div></div>
+      <div class="auth-benefit"><div class="ico">📱</div><div><strong>รองรับทุกอุปกรณ์</strong><span>ออกแบบให้ใช้งานบนมือถือ แท็บเล็ต และคอมพิวเตอร์</span></div></div>
+      <div class="auth-benefit"><div class="ico">💙</div><div><strong>ศูนย์ช่วยเหลือ</strong><span>มีช่องทางช่วยเหลือในหน้าเว็บหลังเข้าสู่ระบบ</span></div></div>
+    </aside>
+  </div>
+  <div class="auth-foot">V16 Arcade • Demo Credits ไม่มีมูลค่าเงินจริง</div>
+</div>
+
+<script>
+window.UFALAOS_SUPABASE_URL='https://sxeleomnhbgqnxpcijgz.supabase.co';
+window.UFALAOS_SUPABASE_KEY='sb_publishable_OVN1GAX5oe8ntLHEf2bo8g_1qEAdrM5';
+window.ufalaosSupabase=window.supabase.createClient(window.UFALAOS_SUPABASE_URL,window.UFALAOS_SUPABASE_KEY,{
+  auth:{autoRefreshToken:true,persistSession:true,detectSessionInUrl:true,storage:window.localStorage,storageKey:'ufalaos3999_auth_v16'}
+});
+const gate=document.getElementById('authGate'),msg=document.getElementById('authMsg');
+let authReady=false;
+function authMessage(t,ok=false){msg.textContent=t;msg.style.color=ok?'#157347':'#b42318'}
+function setGate(session){authReady=true;gate.style.display=session?'none':'flex';}
+async function finishAuth(){
+  try{
+    const {data,error}=await window.ufalaosSupabase.auth.getSession();
+    if(error) throw error;
+    setGate(data.session||null);
+  }catch(e){
+    authMessage('ตรวจสอบเซสชันไม่สำเร็จ กรุณาลองใหม่');
+    setGate(null);
+  }
+}
+
+async function syncDemoWallet(){
+  try{
+    const {data:{session}}=await window.ufalaosSupabase.auth.getSession();
+    if(!session) return;
+    const {data,error}=await window.ufalaosSupabase.rpc('ensure_demo_wallet');
+    if(error) throw error;
+    if(data && typeof data.credits !== 'undefined'){
+      balance=Math.max(0,Number(data.credits)||0);
+      if(typeof update==='function') update();
+      if(typeof save==='function') save();
+    }
+  }catch(e){
+    console.warn('Demo wallet sync failed',e);
+  }
+}
+window.ufalaosSupabase.auth.onAuthStateChange((event,session)=>{
+  if(event==='SIGNED_IN'||event==='INITIAL_SESSION'||event==='TOKEN_REFRESHED'||event==='USER_UPDATED'){ setGate(session); if(session) setTimeout(syncDemoWallet,0); }
+  if(event==='SIGNED_OUT') setGate(null);
+});
+async function doLogin(){
+  const identifier=document.getElementById('authEmail').value.trim(),password=document.getElementById('authPassword').value;
+  if(!identifier||!password){authMessage('กรุณากรอกอีเมล/เบอร์โทรศัพท์และรหัสผ่าน');return}
+  authMessage('กำลังเข้าสู่ระบบ…');
+  const credentials=identifier.includes('@')?{email:identifier,password}:{phone:identifier,password};
+  const {data,error}=await window.ufalaosSupabase.auth.signInWithPassword(credentials);
+  if(error){authMessage(error.message);return}
+  if(data.session){authMessage('เข้าสู่ระบบสำเร็จ',true);setGate(data.session);await syncDemoWallet()}
+}
+async function doSignup(){
+  const email=document.getElementById('authEmail').value.trim(),password=document.getElementById('authPassword').value;
+  if(!email.includes('@')||password.length<6){authMessage('สมัครสมาชิกด้วยอีเมลและรหัสผ่านอย่างน้อย 6 ตัวอักษร');return}
+  authMessage('กำลังสร้างบัญชี…');
+  const {data,error}=await window.ufalaosSupabase.auth.signUp({email,password});
+  if(error){authMessage(error.message);return}
+  if(data.session){authMessage('สร้างบัญชีและเข้าสู่ระบบแล้ว',true);setGate(data.session);await syncDemoWallet()}
+  else authMessage('สร้างบัญชีแล้ว กรุณายืนยันอีเมลก่อนเข้าสู่ระบบ',true);
+}
+document.getElementById('loginBtn').onclick=doLogin;
+document.getElementById('signupBtn').onclick=doSignup;
+document.getElementById('googleBtn').onclick=async()=>{
+  authMessage('กำลังเปิด Google Login…');
+  const {error}=await window.ufalaosSupabase.auth.signInWithOAuth({provider:'google',options:{redirectTo:window.location.href}});
+  if(error)authMessage(error.message);
+};
+document.getElementById('lineBtn').onclick=()=>authMessage('LINE Login ยังต้องเปิด Provider ใน Supabase ก่อน จึงจะใช้งานจริงได้');
+document.getElementById('forgotLink').onclick=()=>authMessage('การรีเซ็ตรหัสผ่านจะเชื่อม Supabase Auth ในขั้นถัดไป');
+document.getElementById('authEye').onclick=()=>{
+  const input=document.getElementById('authPassword');
+  input.type=input.type==='password'?'text':'password';
+};
+finishAuth();
+</script>
+<script>
+const APP_VERSION='V16';
+const STORAGE_KEY='ufalaos3999_state_v16';
+const symbols=['🍒','🍋','🔔','⭐','💎','7️⃣'];
+
+let state={balance:1000,plays:0,lastDaily:null,messages:['ระบบ: ยินดีต้อนรับสู่ V16 Arcade'],compact:false,aiEndpoint:'',currentPage:'home'};
+try{state={...state,...JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}')}}catch(e){}
+
+let balance=Number(state.balance)||1000;
+let plays=Number(state.plays)||0;
+let lastDaily=state.lastDaily||null;
+let messages=Array.isArray(state.messages)?state.messages:['ระบบ: ยินดีต้อนรับสู่ V16 Arcade'];
+let history=Array.isArray(state.history)?state.history:[];
+let compact=!!state.compact;
+let aiEndpoint=typeof state.aiEndpoint==='string'?state.aiEndpoint:'';
+let currentPage='home';
+let gameBusy=false;
+let achievements=state.achievements&&typeof state.achievements==='object'?state.achievements:{};
+let activityClaimed=!!state.activityClaimed;
+
+setTimeout(()=>{ if(window.ufalaosSupabase) syncDemoWallet(); },50);
+
+const money=n=>Number(n).toLocaleString('en-US');
+
+function normalizeState(){
+  balance=Math.max(0,Number(balance)||0);
+  plays=Math.max(0,Math.floor(Number(plays)||0));
+  if(!Array.isArray(messages)||!messages.length)messages=['ระบบ: ยินดีต้อนรับสู่ V16 Arcade'];
+  messages=messages.slice(-30).map(x=>String(x));
+  if(!Array.isArray(history))history=[];
+  history=history.slice(0,50).map(x=>String(x));
+}
+
+function save(){
+  normalizeState();
+  localStorage.setItem(STORAGE_KEY,JSON.stringify({balance,plays,lastDaily,messages,history,compact,aiEndpoint,currentPage,achievements,activityClaimed}));
+}
+
+function updateStatus(){
+  const el=document.getElementById('sessionStatus');
+  if(el)el.textContent='สถานะระบบ: พร้อมใช้งาน • คะแนน '+money(balance)+' • เล่นแล้ว '+plays+' รอบ';
+}
+
+function update(){
+  document.getElementById('bal').textContent=money(balance);
+  document.getElementById('profileBal').textContent=money(balance);
+  document.getElementById('plays').textContent=plays;
+  const homeBal=document.getElementById('homeBal'); if(homeBal)homeBal.textContent=money(balance);
+  const homePlays=document.getElementById('homePlays'); if(homePlays)homePlays.textContent=plays;
+  const homeHistory=document.getElementById('homeHistory'); if(homeHistory)homeHistory.textContent=history.length;
+  const achPlays=document.getElementById('achPlays'); if(achPlays)achPlays.textContent=plays;
+  const achBal=document.getElementById('achBal'); if(achBal)achBal.textContent=money(balance);
+  const achHistory=document.getElementById('achHistory'); if(achHistory)achHistory.textContent=history.length;
+  const achChat=document.getElementById('achChat'); if(achChat)achChat.textContent=Math.max(0,messages.length-1);
+  const ab=document.getElementById('adminBal'); if(ab)ab.textContent=money(balance);
+  const ap=document.getElementById('adminPlays'); if(ap)ap.textContent=plays;
+  updateStatus();
+}
+
+function toast(t){
+  const x=document.getElementById('toast');
+  x.textContent=t;
+  x.classList.add('show');
+  clearTimeout(window.tt);
+  window.tt=setTimeout(()=>x.classList.remove('show'),1800);
+}
+
+
+const GAME_CATEGORIES=[
+  {id:'featured',icon:'⭐',title:'แนะนำ',desc:'เกมเด่นสำหรับวันนี้',games:[
+    ['g1','🚀','Sky Jump','เกมเด่นสำหรับวันนี้ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g2','🐠','Ocean Catch','เกมเด่นสำหรับวันนี้ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g3','🌈','Color Match','เกมเด่นสำหรับวันนี้ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g4','🌌','Space Dash','เกมเด่นสำหรับวันนี้ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g5','🎯','Rocket Run','เกมเด่นสำหรับวันนี้ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g6','🫧','Pixel Dash','เกมเด่นสำหรับวันนี้ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g7','🍎','Target Pop','เกมเด่นสำหรับวันนี้ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g8','🧠','Bubble Burst','เกมเด่นสำหรับวันนี้ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g9','🧩','Fruit Match','เกมเด่นสำหรับวันนี้ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g10','🏝️','Memory Flip','เกมเด่นสำหรับวันนี้ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g11','🌟','Mini Maze','เกมเด่นสำหรับวันนี้ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g12','🛸','Island Quest','เกมเด่นสำหรับวันนี้ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g13','🐙','Galaxy Quest','เกมเด่นสำหรับวันนี้ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g14','🦈','Treasure Map','เกมเด่นสำหรับวันนี้ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g15','🦆','Forest Run','เกมเด่นสำหรับวันนี้ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g16','🪶','Cloud Hop','เกมเด่นสำหรับวันนี้ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g17','🎈','Star Catcher','เกมเด่นสำหรับวันนี้ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g18','🍀','Duck Flight','เกมเด่นสำหรับวันนี้ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g19','🔷','Duck Catch','เกมเด่นสำหรับวันนี้ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g20','🐳','Lucky Balloon','เกมเด่นสำหรับวันนี้ • เล่นเดโมเพื่อทำคะแนนส่วนตัว']
+  ]},
+  {id:'arcade',icon:'🕹️',title:'Arcade',desc:'เกมสั้น เล่นเร็ว เข้าใจง่าย',games:[
+    ['g21','🚀','Sky Jump 2','เกมสั้น เล่นเร็ว เข้าใจง่าย • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g22','🐠','Ocean Catch 2','เกมสั้น เล่นเร็ว เข้าใจง่าย • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g23','🌈','Color Match 2','เกมสั้น เล่นเร็ว เข้าใจง่าย • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g24','🌌','Space Dash 2','เกมสั้น เล่นเร็ว เข้าใจง่าย • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g25','🎯','Rocket Run 2','เกมสั้น เล่นเร็ว เข้าใจง่าย • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g26','🫧','Pixel Dash 2','เกมสั้น เล่นเร็ว เข้าใจง่าย • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g27','🍎','Target Pop 2','เกมสั้น เล่นเร็ว เข้าใจง่าย • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g28','🧠','Bubble Burst 2','เกมสั้น เล่นเร็ว เข้าใจง่าย • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g29','🧩','Fruit Match 2','เกมสั้น เล่นเร็ว เข้าใจง่าย • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g30','🏝️','Memory Flip 2','เกมสั้น เล่นเร็ว เข้าใจง่าย • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g31','🌟','Mini Maze 2','เกมสั้น เล่นเร็ว เข้าใจง่าย • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g32','🛸','Island Quest 2','เกมสั้น เล่นเร็ว เข้าใจง่าย • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g33','🐙','Galaxy Quest 2','เกมสั้น เล่นเร็ว เข้าใจง่าย • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g34','🦈','Treasure Map 2','เกมสั้น เล่นเร็ว เข้าใจง่าย • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g35','🦆','Forest Run 2','เกมสั้น เล่นเร็ว เข้าใจง่าย • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g36','🪶','Cloud Hop 2','เกมสั้น เล่นเร็ว เข้าใจง่าย • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g37','🎈','Star Catcher 2','เกมสั้น เล่นเร็ว เข้าใจง่าย • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g38','🍀','Duck Flight 2','เกมสั้น เล่นเร็ว เข้าใจง่าย • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g39','🔷','Duck Catch 2','เกมสั้น เล่นเร็ว เข้าใจง่าย • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g40','🐳','Lucky Balloon 2','เกมสั้น เล่นเร็ว เข้าใจง่าย • เล่นเดโมเพื่อทำคะแนนส่วนตัว']
+  ]},
+  {id:'casual',icon:'🎮',title:'Casual',desc:'เกมเล่นเพลินแบบไม่ซับซ้อน',games:[
+    ['g41','🚀','Sky Jump 3','เกมเล่นเพลินแบบไม่ซับซ้อน • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g42','🐠','Ocean Catch 3','เกมเล่นเพลินแบบไม่ซับซ้อน • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g43','🌈','Color Match 3','เกมเล่นเพลินแบบไม่ซับซ้อน • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g44','🌌','Space Dash 3','เกมเล่นเพลินแบบไม่ซับซ้อน • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g45','🎯','Rocket Run 3','เกมเล่นเพลินแบบไม่ซับซ้อน • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g46','🫧','Pixel Dash 3','เกมเล่นเพลินแบบไม่ซับซ้อน • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g47','🍎','Target Pop 3','เกมเล่นเพลินแบบไม่ซับซ้อน • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g48','🧠','Bubble Burst 3','เกมเล่นเพลินแบบไม่ซับซ้อน • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g49','🧩','Fruit Match 3','เกมเล่นเพลินแบบไม่ซับซ้อน • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g50','🏝️','Memory Flip 3','เกมเล่นเพลินแบบไม่ซับซ้อน • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g51','🌟','Mini Maze 3','เกมเล่นเพลินแบบไม่ซับซ้อน • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g52','🛸','Island Quest 3','เกมเล่นเพลินแบบไม่ซับซ้อน • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g53','🐙','Galaxy Quest 3','เกมเล่นเพลินแบบไม่ซับซ้อน • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g54','🦈','Treasure Map 3','เกมเล่นเพลินแบบไม่ซับซ้อน • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g55','🦆','Forest Run 3','เกมเล่นเพลินแบบไม่ซับซ้อน • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g56','🪶','Cloud Hop 3','เกมเล่นเพลินแบบไม่ซับซ้อน • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g57','🎈','Star Catcher 3','เกมเล่นเพลินแบบไม่ซับซ้อน • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g58','🍀','Duck Flight 3','เกมเล่นเพลินแบบไม่ซับซ้อน • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g59','🔷','Duck Catch 3','เกมเล่นเพลินแบบไม่ซับซ้อน • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g60','🐳','Lucky Balloon 3','เกมเล่นเพลินแบบไม่ซับซ้อน • เล่นเดโมเพื่อทำคะแนนส่วนตัว']
+  ]},
+  {id:'puzzle',icon:'🧩',title:'Puzzle',desc:'เกมฝึกคิดและจับคู่',games:[
+    ['g61','🚀','Sky Jump 4','เกมฝึกคิดและจับคู่ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g62','🐠','Ocean Catch 4','เกมฝึกคิดและจับคู่ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g63','🌈','Color Match 4','เกมฝึกคิดและจับคู่ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g64','🌌','Space Dash 4','เกมฝึกคิดและจับคู่ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g65','🎯','Rocket Run 4','เกมฝึกคิดและจับคู่ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g66','🫧','Pixel Dash 4','เกมฝึกคิดและจับคู่ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g67','🍎','Target Pop 4','เกมฝึกคิดและจับคู่ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g68','🧠','Bubble Burst 4','เกมฝึกคิดและจับคู่ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g69','🧩','Fruit Match 4','เกมฝึกคิดและจับคู่ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g70','🏝️','Memory Flip 4','เกมฝึกคิดและจับคู่ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g71','🌟','Mini Maze 4','เกมฝึกคิดและจับคู่ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g72','🛸','Island Quest 4','เกมฝึกคิดและจับคู่ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g73','🐙','Galaxy Quest 4','เกมฝึกคิดและจับคู่ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g74','🦈','Treasure Map 4','เกมฝึกคิดและจับคู่ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g75','🦆','Forest Run 4','เกมฝึกคิดและจับคู่ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g76','🪶','Cloud Hop 4','เกมฝึกคิดและจับคู่ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g77','🎈','Star Catcher 4','เกมฝึกคิดและจับคู่ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g78','🍀','Duck Flight 4','เกมฝึกคิดและจับคู่ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g79','🔷','Duck Catch 4','เกมฝึกคิดและจับคู่ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g80','🐳','Lucky Balloon 4','เกมฝึกคิดและจับคู่ • เล่นเดโมเพื่อทำคะแนนส่วนตัว']
+  ]},
+  {id:'adventure',icon:'🗺️',title:'Adventure',desc:'ภารกิจสำรวจโลกแฟนตาซี',games:[
+    ['g81','🚀','Sky Jump 5','ภารกิจสำรวจโลกแฟนตาซี • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g82','🐠','Ocean Catch 5','ภารกิจสำรวจโลกแฟนตาซี • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g83','🌈','Color Match 5','ภารกิจสำรวจโลกแฟนตาซี • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g84','🌌','Space Dash 5','ภารกิจสำรวจโลกแฟนตาซี • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g85','🎯','Rocket Run 5','ภารกิจสำรวจโลกแฟนตาซี • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g86','🫧','Pixel Dash 5','ภารกิจสำรวจโลกแฟนตาซี • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g87','🍎','Target Pop 5','ภารกิจสำรวจโลกแฟนตาซี • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g88','🧠','Bubble Burst 5','ภารกิจสำรวจโลกแฟนตาซี • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g89','🧩','Fruit Match 5','ภารกิจสำรวจโลกแฟนตาซี • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g90','🏝️','Memory Flip 5','ภารกิจสำรวจโลกแฟนตาซี • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g91','🌟','Mini Maze 5','ภารกิจสำรวจโลกแฟนตาซี • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g92','🛸','Island Quest 5','ภารกิจสำรวจโลกแฟนตาซี • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g93','🐙','Galaxy Quest 5','ภารกิจสำรวจโลกแฟนตาซี • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g94','🦈','Treasure Map 5','ภารกิจสำรวจโลกแฟนตาซี • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g95','🦆','Forest Run 5','ภารกิจสำรวจโลกแฟนตาซี • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g96','🪶','Cloud Hop 5','ภารกิจสำรวจโลกแฟนตาซี • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g97','🎈','Star Catcher 5','ภารกิจสำรวจโลกแฟนตาซี • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g98','🍀','Duck Flight 5','ภารกิจสำรวจโลกแฟนตาซี • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g99','🔷','Duck Catch 5','ภารกิจสำรวจโลกแฟนตาซี • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g100','🐳','Lucky Balloon 5','ภารกิจสำรวจโลกแฟนตาซี • เล่นเดโมเพื่อทำคะแนนส่วนตัว']
+  ]},
+  {id:'space',icon:'🚀',title:'Space',desc:'เกมผจญภัยในอวกาศ',games:[
+    ['g101','🚀','Sky Jump 6','เกมผจญภัยในอวกาศ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g102','🐠','Ocean Catch 6','เกมผจญภัยในอวกาศ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g103','🌈','Color Match 6','เกมผจญภัยในอวกาศ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g104','🌌','Space Dash 6','เกมผจญภัยในอวกาศ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g105','🎯','Rocket Run 6','เกมผจญภัยในอวกาศ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g106','🫧','Pixel Dash 6','เกมผจญภัยในอวกาศ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g107','🍎','Target Pop 6','เกมผจญภัยในอวกาศ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g108','🧠','Bubble Burst 6','เกมผจญภัยในอวกาศ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g109','🧩','Fruit Match 6','เกมผจญภัยในอวกาศ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g110','🏝️','Memory Flip 6','เกมผจญภัยในอวกาศ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g111','🌟','Mini Maze 6','เกมผจญภัยในอวกาศ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g112','🛸','Island Quest 6','เกมผจญภัยในอวกาศ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g113','🐙','Galaxy Quest 6','เกมผจญภัยในอวกาศ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g114','🦈','Treasure Map 6','เกมผจญภัยในอวกาศ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g115','🦆','Forest Run 6','เกมผจญภัยในอวกาศ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g116','🪶','Cloud Hop 6','เกมผจญภัยในอวกาศ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g117','🎈','Star Catcher 6','เกมผจญภัยในอวกาศ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g118','🍀','Duck Flight 6','เกมผจญภัยในอวกาศ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g119','🔷','Duck Catch 6','เกมผจญภัยในอวกาศ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g120','🐳','Lucky Balloon 6','เกมผจญภัยในอวกาศ • เล่นเดโมเพื่อทำคะแนนส่วนตัว']
+  ]},
+  {id:'ocean',icon:'🌊',title:'Ocean',desc:'เกมทะเลและโลกใต้น้ำ',games:[
+    ['g121','🚀','Sky Jump 7','เกมทะเลและโลกใต้น้ำ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g122','🐠','Ocean Catch 7','เกมทะเลและโลกใต้น้ำ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g123','🌈','Color Match 7','เกมทะเลและโลกใต้น้ำ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g124','🌌','Space Dash 7','เกมทะเลและโลกใต้น้ำ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g125','🎯','Rocket Run 7','เกมทะเลและโลกใต้น้ำ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g126','🫧','Pixel Dash 7','เกมทะเลและโลกใต้น้ำ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g127','🍎','Target Pop 7','เกมทะเลและโลกใต้น้ำ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g128','🧠','Bubble Burst 7','เกมทะเลและโลกใต้น้ำ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g129','🧩','Fruit Match 7','เกมทะเลและโลกใต้น้ำ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g130','🏝️','Memory Flip 7','เกมทะเลและโลกใต้น้ำ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g131','🌟','Mini Maze 7','เกมทะเลและโลกใต้น้ำ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g132','🛸','Island Quest 7','เกมทะเลและโลกใต้น้ำ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g133','🐙','Galaxy Quest 7','เกมทะเลและโลกใต้น้ำ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g134','🦈','Treasure Map 7','เกมทะเลและโลกใต้น้ำ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g135','🦆','Forest Run 7','เกมทะเลและโลกใต้น้ำ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g136','🪶','Cloud Hop 7','เกมทะเลและโลกใต้น้ำ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g137','🎈','Star Catcher 7','เกมทะเลและโลกใต้น้ำ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g138','🍀','Duck Flight 7','เกมทะเลและโลกใต้น้ำ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g139','🔷','Duck Catch 7','เกมทะเลและโลกใต้น้ำ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g140','🐳','Lucky Balloon 7','เกมทะเลและโลกใต้น้ำ • เล่นเดโมเพื่อทำคะแนนส่วนตัว']
+  ]},
+  {id:'target',icon:'🎯',title:'Target',desc:'เกมท้าความแม่นยำ',games:[
+    ['g141','🚀','Sky Jump 8','เกมท้าความแม่นยำ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g142','🐠','Ocean Catch 8','เกมท้าความแม่นยำ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g143','🌈','Color Match 8','เกมท้าความแม่นยำ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g144','🌌','Space Dash 8','เกมท้าความแม่นยำ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g145','🎯','Rocket Run 8','เกมท้าความแม่นยำ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g146','🫧','Pixel Dash 8','เกมท้าความแม่นยำ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g147','🍎','Target Pop 8','เกมท้าความแม่นยำ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g148','🧠','Bubble Burst 8','เกมท้าความแม่นยำ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g149','🧩','Fruit Match 8','เกมท้าความแม่นยำ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g150','🏝️','Memory Flip 8','เกมท้าความแม่นยำ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g151','🌟','Mini Maze 8','เกมท้าความแม่นยำ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g152','🛸','Island Quest 8','เกมท้าความแม่นยำ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g153','🐙','Galaxy Quest 8','เกมท้าความแม่นยำ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g154','🦈','Treasure Map 8','เกมท้าความแม่นยำ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g155','🦆','Forest Run 8','เกมท้าความแม่นยำ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g156','🪶','Cloud Hop 8','เกมท้าความแม่นยำ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g157','🎈','Star Catcher 8','เกมท้าความแม่นยำ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g158','🍀','Duck Flight 8','เกมท้าความแม่นยำ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g159','🔷','Duck Catch 8','เกมท้าความแม่นยำ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g160','🐳','Lucky Balloon 8','เกมท้าความแม่นยำ • เล่นเดโมเพื่อทำคะแนนส่วนตัว']
+  ]},
+  {id:'duckfun',icon:'🦆',title:'Duck & Fun',desc:'เกมเป็ดบินและเก็บของ',games:[
+    ['g161','🚀','Sky Jump 9','เกมเป็ดบินและเก็บของ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g162','🐠','Ocean Catch 9','เกมเป็ดบินและเก็บของ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g163','🌈','Color Match 9','เกมเป็ดบินและเก็บของ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g164','🌌','Space Dash 9','เกมเป็ดบินและเก็บของ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g165','🎯','Rocket Run 9','เกมเป็ดบินและเก็บของ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g166','🫧','Pixel Dash 9','เกมเป็ดบินและเก็บของ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g167','🍎','Target Pop 9','เกมเป็ดบินและเก็บของ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g168','🧠','Bubble Burst 9','เกมเป็ดบินและเก็บของ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g169','🧩','Fruit Match 9','เกมเป็ดบินและเก็บของ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g170','🏝️','Memory Flip 9','เกมเป็ดบินและเก็บของ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g171','🌟','Mini Maze 9','เกมเป็ดบินและเก็บของ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g172','🛸','Island Quest 9','เกมเป็ดบินและเก็บของ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g173','🐙','Galaxy Quest 9','เกมเป็ดบินและเก็บของ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g174','🦈','Treasure Map 9','เกมเป็ดบินและเก็บของ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g175','🦆','Forest Run 9','เกมเป็ดบินและเก็บของ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g176','🪶','Cloud Hop 9','เกมเป็ดบินและเก็บของ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g177','🎈','Star Catcher 9','เกมเป็ดบินและเก็บของ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g178','🍀','Duck Flight 9','เกมเป็ดบินและเก็บของ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g179','🔷','Duck Catch 9','เกมเป็ดบินและเก็บของ • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g180','🐳','Lucky Balloon 9','เกมเป็ดบินและเก็บของ • เล่นเดโมเพื่อทำคะแนนส่วนตัว']
+  ]},
+  {id:'mini',icon:'🐠',title:'Mini Games',desc:'รวมเกมมินิเล่นง่าย',games:[
+    ['g181','🚀','Sky Jump 10','รวมเกมมินิเล่นง่าย • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g182','🐠','Ocean Catch 10','รวมเกมมินิเล่นง่าย • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g183','🌈','Color Match 10','รวมเกมมินิเล่นง่าย • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g184','🌌','Space Dash 10','รวมเกมมินิเล่นง่าย • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g185','🎯','Rocket Run 10','รวมเกมมินิเล่นง่าย • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g186','🫧','Pixel Dash 10','รวมเกมมินิเล่นง่าย • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g187','🍎','Target Pop 10','รวมเกมมินิเล่นง่าย • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g188','🧠','Bubble Burst 10','รวมเกมมินิเล่นง่าย • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g189','🧩','Fruit Match 10','รวมเกมมินิเล่นง่าย • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g190','🏝️','Memory Flip 10','รวมเกมมินิเล่นง่าย • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g191','🌟','Mini Maze 10','รวมเกมมินิเล่นง่าย • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g192','🛸','Island Quest 10','รวมเกมมินิเล่นง่าย • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g193','🐙','Galaxy Quest 10','รวมเกมมินิเล่นง่าย • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g194','🦈','Treasure Map 10','รวมเกมมินิเล่นง่าย • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g195','🦆','Forest Run 10','รวมเกมมินิเล่นง่าย • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g196','🪶','Cloud Hop 10','รวมเกมมินิเล่นง่าย • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g197','🎈','Star Catcher 10','รวมเกมมินิเล่นง่าย • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g198','🍀','Duck Flight 10','รวมเกมมินิเล่นง่าย • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g199','🔷','Duck Catch 10','รวมเกมมินิเล่นง่าย • เล่นเดโมเพื่อทำคะแนนส่วนตัว'],['g200','🐳','Lucky Balloon 10','รวมเกมมินิเล่นง่าย • เล่นเดโมเพื่อทำคะแนนส่วนตัว']
+  ]}
+];
+let selectedCategory='featured';
+
+function renderCategories(){
+  const grid=document.getElementById('categoryGrid');
+  if(!grid)return;
+  grid.innerHTML=GAME_CATEGORIES.map(c=>`<div class="category-card">
+    <div><div class="icon">${c.icon}</div><h3>${c.title}</h3><p class="muted">${c.desc}</p></div>
+    <div><span class="category-count">${c.games.length} เกม/รายการ</span><br><button class="primary" style="margin-top:10px" onclick="openCategory('${c.id}')">ดูเกม</button></div>
+  </div>`).join('');
+}
+function openCategory(id){
+  const c=GAME_CATEGORIES.find(x=>x.id===id); if(!c)return;
+  selectedCategory=id;
+  const title=document.getElementById('catalogTitle'),desc=document.getElementById('catalogDesc');
+  if(title)title.textContent=c.icon+' '+c.title;
+  if(desc)desc.textContent=c.desc;
+  const search=document.getElementById('gameSearch'); if(search)search.value='';
+  renderCatalog(); show('catalog');
+}
+function renderCatalog(){
+  const box=document.getElementById('gameCatalog'), c=GAME_CATEGORIES.find(x=>x.id===selectedCategory);
+  if(!box||!c)return;
+  const q=(document.getElementById('gameSearch')?.value||'').trim().toLowerCase();
+  const games=c.games.filter(g=>(g[2]+' '+g[3]).toLowerCase().includes(q));
+  box.innerHTML=games.length?games.map(g=>`<div class="game-tile">
+    <div class="game-art">${g[1]}</div><h3>${g[2]}</h3><p class="muted">${g[3]}</p>
+    <div class="v16-session"><span class="v16-chip">เล่นเดโม</span><span class="v16-chip">คะแนนส่วนตัว</span></div>
+    <button class="primary" style="margin-top:10px" onclick="launchCatalogGame('${g[0]}','${g[2]}')">เปิดเกม</button>
+  </div>`).join(''):'<div class="hero"><h2>ไม่พบเกม</h2><p class="muted">ลองค้นหาด้วยคำอื่น</p></div>';
+}
+function clearGameSearch(){const x=document.getElementById('gameSearch');if(x)x.value='';renderCatalog();}
+function launchCatalogGame(id,name){
+  addHistory('เปิดเกมเดโม: '+name);
+  if(String(name).toLowerCase().includes('duck flight')){ openDuckFlight(); return; } openV16ReelGame(name); return;
+  const playable=[];
+  if(playable.includes(id)){show(id);return;}
+  // V16: รายการเดิมที่เคยเป็น placeholder เปิดเป็นเกมเดโมทั่วไป
+  openDemoGame(id,name);
+}
+
+function openDemoGame(id,name){
+  const page=document.getElementById('catalog');
+  if(!page)return;
+  const title=document.getElementById('catalogTitle');
+  const desc=document.getElementById('catalogDesc');
+  if(title)title.textContent='🎮 '+name;
+  if(desc)desc.textContent='เกมบันเทิงแบบเล่นคะแนน • ไม่มีการเดิมพันหรือเงินจริง';
+  const box=document.getElementById('gameCatalog');
+  box.innerHTML=`<div class="game-tile" style="grid-column:1/-1;text-align:center">
+    <div class="game-art">🎯</div><h3>${name}</h3>
+    <p class="muted">เล่นเพื่อทำคะแนนส่วนตัว ไม่มีการเดิมพันหรือการแลกเงินจริง</p>
+    <div id="demoResult" class="result">พร้อมเล่น</div>
+    <button class="primary" onclick="playGenericDemo('${String(id).replace(/'/g,"\\'")}','${String(name).replace(/'/g,"\\'")}')">▶ เล่นเดโม</button>
+    <button onclick="renderCatalog()">← กลับรายการ</button>
+  </div>`;
+  show('catalog');
+}
+
+function playGenericDemo(id,name){
+  const score=Math.floor(Math.random()*101);
+  const el=document.getElementById('demoResult');
+  if(el)el.textContent='คะแนนรอบนี้: '+score;
+  addHistory('เกมเดโม: '+name+' — คะแนน '+score);
+  toast('เล่นเดโมสำเร็จ • คะแนน '+score);
+}
+
+function show(id){
+  const page=document.getElementById(id);
+  if(!page){toast('ไม่พบหน้านี้');return;}
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  page.classList.add('active');
+  currentPage=id;
+  if(id==='rank')updateRank();
+  if(id==='achievements')updateAchievements();
+  if(id==='promo')updateActivity();
+  if(id==='games')renderCategories();
+
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('nav-active'));
+  const navMap={home:0,games:1,promo:2,rank:3,chat:4,profile:5,history:6,achievements:7,admin:8,help:9,settings:11,'member-ufa-999':10};
+  if(navMap[id]!==undefined)document.querySelectorAll('nav button')[navMap[id]].classList.add('nav-active');
+
+  const titleMap={home:'หน้าแรก',games:'เกม',promo:'กิจกรรม',rank:'อันดับ',chat:'แชต',profile:'โปรไฟล์',history:'ประวัติ',achievements:'ความสำเร็จ',admin:'จัดการ',help:'ช่วยเหลือ',settings:'ตั้งค่า V16','member-ufa-999':'โปรไฟล์ผู้เล่น',catalog:'รายการเกม',slot:'สล็อตจำลอง',roulette:'รูเล็ตจำลอง',baccarat:'บาคาร่า',fishing:'ตกปลา',lottery:'หวยทดลอง'};
+  document.title='V16 Arcade • '+(titleMap[id]||APP_VERSION);
+  save();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function spend(n){
+  if(gameBusy){
+    toast('กำลังประมวลผลรอบก่อนหน้า');
+    return false;
+  }
+  if(balance<n){
+    toast('คะแนนไม่พอ');
+    return false;
+  }
+  balance-=n;
+  plays++;
+  save();
+  update();
+  return true;
+}
+
+function spin(){
+  if(!spend(10))return;
+  gameBusy=true;
+  try{
+
+  const a=[0,1,2].map(()=>symbols[Math.floor(Math.random()*symbols.length)]);
+  ['r1','r2','r3'].forEach((id,i)=>document.getElementById(id).textContent=a[i]);
+
+  let win=0;
+  if(a[0]===a[1]&&a[1]===a[2])win=100;
+  else if(a[0]===a[1]||a[1]===a[2]||a[0]===a[2])win=20;
+
+  balance+=win;
+  save();
+  update();
+
+  document.getElementById('slotResult').textContent=
+    win?'ได้ +'+win+' คะแนน':'รอบนี้ไม่ได้รางวัล';
+
+  toast(win?'+'+win+' คะแนน':'ไม่หักคะแนน');
+  addHistory('สล็อต: '+(win?'ได้ +'+win+' คะแนน':'ไม่ได้รางวัล'));
+  }finally{gameBusy=false;}
+}
+
+function roulette(){
+  if(!spend(10))return;
+  gameBusy=true;
+  try{
+
+  const n=Math.floor(Math.random()*37);
+  document.getElementById('rouletteNum').textContent=n;
+
+  const win=n===7?70:0;
+  balance+=win;
+  save();
+  update();
+
+  document.getElementById('rouletteResult').textContent=
+    win?'เลข 7 — +70 คะแนน':'ออกเลข '+n+' — ลองใหม่ได้';
+
+  toast(win?'+70 คะแนน':'ไม่หักคะแนน');
+  addHistory('รูเล็ต: เลข '+n+(win?' — +70 คะแนน':' — ไม่ได้รางวัล'));
+  }finally{gameBusy=false;}
+}
+
+function daily(){
+  const now=new Date(); const today=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+
+  if(lastDaily===today){
+    toast('รับโบนัสวันนี้แล้ว');
+    return;
+  }
+
+  balance+=100;
+  lastDaily=today;
+  addHistory('โบนัสรายวัน: +100 คะแนน');
+  update();
+  toast('+100 คะแนนทดลอง');
+}
+
+function renderChat(){
+  const box=document.getElementById('chatbox');
+  box.textContent=messages.join('\n');
+}
+
+function sendChat(){
+  const input=document.getElementById('msg');
+  const value=input.value.trim();
+  if(!value)return;
+
+  messages.push('คุณ: '+value);
+  if(messages.length>30)messages=messages.slice(-30);
+
+  input.value='';
+  renderChat();
+  addHistory('แชต: ส่งข้อความ');
+  save();
+  update();
+}
+
+
+function addHistory(text){
+  history.unshift(new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})+' • '+text);
+  if(history.length>50)history=history.slice(0,50);
+  save(); renderHistory();
+}
+function renderHistory(){
+  const box=document.getElementById('historyBox');
+  if(!box)return;
+  box.textContent='';
+  if(!history.length){box.textContent='ยังไม่มีประวัติ';return;}
+  history.forEach(x=>{const row=document.createElement('div');row.textContent=String(x);box.appendChild(row);});
+}
+function baccarat(){
+  if(!spend(10))return;
+  gameBusy=true;
+  try{
+  const p=Math.floor(Math.random()*10), b=Math.floor(Math.random()*10);
+  document.getElementById('baccPlayer').textContent=p;
+  document.getElementById('baccBanker').textContent=b;
+  const win=p===b?20:(p>b?40:0);
+  balance+=win; save(); update();
+  const text=p===b?'เสมอ +20 คะแนน':win?'Player ได้ +40 คะแนน':'Banker ชนะ — รอบนี้ไม่ได้รางวัล';
+  document.getElementById('baccResult').textContent=text;
+  addHistory('บาคาร่า: '+text);
+  toast(win?'+'+win+' คะแนน':'ไม่หักคะแนน');
+  }finally{gameBusy=false;}
+}
+function fishing(){
+  if(!spend(10))return;
+  gameBusy=true;
+  try{
+  const fish=[['🐟',10],['🐠',20],['🦑',30],['🐙',50],['🦈',100],['🐋',150]];
+  const [icon,win]=fish[Math.floor(Math.random()*fish.length)];
+  document.getElementById('fishIcon').textContent=icon;
+  balance+=win; save(); update();
+  const text='ตกปลา '+icon+' ได้ +'+win+' คะแนน';
+  document.getElementById('fishResult').textContent=text;
+  addHistory(text); toast('+'+win+' คะแนน');
+  }finally{gameBusy=false;}
+}
+function lottery(){
+  if(!spend(10))return;
+  gameBusy=true;
+  try{
+  const n=String(Math.floor(Math.random()*1000)).padStart(3,'0');
+  document.getElementById('lotteryNum').textContent=n;
+  const win=n==='399'?500:(n.endsWith('9')?50:0);
+  balance+=win; save(); update();
+  const text=win?'เลข '+n+' — +'+win+' คะแนน':'เลข '+n+' — ไม่ถูกรางวัล';
+  document.getElementById('lotteryResult').textContent=text;
+  addHistory('หวยทดลอง: '+text); toast(win?'+'+win+' คะแนน':'ไม่หักคะแนน');
+  }finally{gameBusy=false;}
+}
+
+
+
+function exportState(){
+  const data={version:'v16',balance,plays,lastDaily,messages,history,compact,aiEndpoint,currentPage,achievements,activityClaimed};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='ufalaos3999-state-v16.json';
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  toast('ส่งออกข้อมูล V16 แล้ว');
+}
+
+
+function demoTopup(amount){
+  amount=Number(amount)||0;
+  if(!amount)return;
+  balance+=amount;
+  save(); update();
+  const msg='เติมคะแนน Demo +'+money(amount)+' คะแนน (จำลอง)';
+  const el=document.getElementById('topupResult'); if(el)el.textContent=msg+' • ไม่มีการโอนเงินจริง';
+  addHistory(msg);
+  toast('เพิ่ม '+money(amount)+' คะแนน Demo แล้ว');
+}
+
+function adminAdd(amount){
+  balance+=Number(amount)||0;
+  save(); update();
+  addHistory('จัดการทดสอบ: เพิ่ม '+money(amount)+' คะแนน');
+  toast('เพิ่ม '+money(amount)+' คะแนนแล้ว');
+}
+function adminReset(){
+  resetDemo();
+}
+
+function resetDemo(){
+  if(!confirm('รีเซ็ตคะแนนและข้อมูลการทดสอบทั้งหมดหรือไม่?'))return;
+
+  balance=1000;
+  plays=0;
+  lastDaily=null;
+  messages=['ระบบ: ยินดีต้อนรับสู่ V16 Arcade'];
+  history=[];
+  achievements={};
+  activityClaimed=false;
+  compact=false;
+  aiEndpoint='';
+  currentPage='home';
+  save();
+  update();
+  renderChat();
+  renderHistory();
+
+  document.getElementById('r1').textContent='🍒';
+  document.getElementById('r2').textContent='⭐';
+  document.getElementById('r3').textContent='7️⃣';
+  document.getElementById('rouletteNum').textContent='?';
+  document.getElementById('slotResult').textContent='พร้อมเล่น';
+  document.getElementById('rouletteResult').textContent='พร้อมเล่น';
+    document.getElementById('baccPlayer').textContent='?';
+    document.getElementById('baccBanker').textContent='?';
+    document.getElementById('baccResult').textContent='พร้อมเล่น';
+    document.getElementById('fishIcon').textContent='🐟';
+    document.getElementById('fishResult').textContent='พร้อมเล่น';
+    document.getElementById('lotteryNum').textContent='---';
+    document.getElementById('lotteryResult').textContent='พร้อมเล่น';
+
+  currentPage='home';
+  applyV16Settings();
+  show('home');
+  toast('รีเซ็ตข้อมูลแล้ว');
+}
+
+
+function applyV16Settings(){
+  document.body.classList.toggle('compact',compact);
+  const storageEl=document.getElementById('v10Storage');
+  if(storageEl){
+    try{localStorage.setItem('__ufalaos3999_test__','1');localStorage.removeItem('__ufalaos3999_test__');storageEl.textContent='พร้อม';}
+    catch(e){storageEl.textContent='ไม่พร้อม';}
+  }
+  const ep=document.getElementById('aiEndpoint');
+  if(ep)ep.value=aiEndpoint;
+  const st=document.getElementById('aiStatus');
+  if(st)st.textContent=aiEndpoint?'สถานะ: ตั้งค่า Backend แล้ว':'สถานะ: ยังไม่ได้เชื่อมต่อ Backend';
+}
+function toggleCompact(){
+  compact=!compact;
+  save(); applyV16Settings();
+  toast(compact?'เปิดโหมดกะทัดรัด':'ปิดโหมดกะทัดรัด');
+}
+function saveAiEndpoint(){
+  const ep=document.getElementById('aiEndpoint');
+  aiEndpoint=(ep?ep.value.trim():'');
+  save(); applyV16Settings();
+  toast(aiEndpoint?'บันทึก Backend URL แล้ว':'ล้าง Backend URL แล้ว');
+}
+function importStatePrompt(){
+  const raw=prompt('วาง JSON ที่ส่งออกจากโปรเจกต์ V9, V16 หรือ V16:');
+  if(!raw)return;
+  try{
+    const d=JSON.parse(raw);
+    if(!d || typeof d!=='object') throw new Error('invalid');
+    if(d.version && !['v9','v10','v11','v16'].includes(String(d.version).toLowerCase())) throw new Error('version');
+    balance=Number(d.balance)||1000;
+    plays=Number(d.plays)||0;
+    lastDaily=d.lastDaily||null;
+    messages=Array.isArray(d.messages)?d.messages:['ระบบ: ยินดีต้อนรับสู่ V16 Arcade'];
+    history=Array.isArray(d.history)?d.history:[];
+    compact=!!d.compact;
+    aiEndpoint=typeof d.aiEndpoint==='string'?d.aiEndpoint:'';
+    currentPage=typeof d.currentPage==='string'&&document.getElementById(d.currentPage)?d.currentPage:'home';
+    achievements=d.achievements&&typeof d.achievements==='object'?d.achievements:{};
+    activityClaimed=!!d.activityClaimed;
+    save(); update(); renderChat(); renderHistory(); applyV16Settings(); show(currentPage);
+    toast('นำเข้าข้อมูล V16 แล้ว');
+  }catch(e){ toast('ข้อมูล JSON ไม่ถูกต้อง'); }
+}
+function clearLocalData(){
+  if(!confirm('ล้างข้อมูล Demo ในเบราว์เซอร์นี้หรือไม่?'))return;
+  localStorage.removeItem(STORAGE_KEY);
+  balance=1000; plays=0; lastDaily=null;
+  messages=['ระบบ: ยินดีต้อนรับสู่ V16 Arcade'];
+  history=[]; compact=false; aiEndpoint=''; currentPage='home'; achievements={}; activityClaimed=false;
+  save(); update(); renderChat(); renderHistory(); applyV16Settings(); show('home');
+  toast('ล้างข้อมูล V16 แล้ว');
+}
+
+
+function claimActivity(){
+  if(activityClaimed){ toast('รับรางวัลกิจกรรมนี้แล้ว'); return; }
+  activityClaimed=true;
+  balance+=50;
+  addHistory('กิจกรรมทดลอง: รับรางวัล +50 คะแนน');
+  update();
+  toast('+50 คะแนน');
+}
+function updateActivity(){
+  const btn=document.getElementById('activityBtn');
+  const status=document.getElementById('activityStatus');
+  if(btn){ btn.disabled=activityClaimed; btn.textContent=activityClaimed?'✓ รับแล้ว':'✨ รางวัลกิจกรรม +50'; }
+  if(status)status.textContent=activityClaimed?'รับรางวัลกิจกรรมแล้ว':'พร้อมรับรางวัลกิจกรรม';
+}
+function achievementRules(){
+  return [
+    {id:'first_play',title:'เริ่มต้นนักเล่น',desc:'เล่นครบ 1 รอบ',ok:plays>=1},
+    {id:'five_plays',title:'มือใหม่ขยัน',desc:'เล่นครบ 5 รอบ',ok:plays>=5},
+    {id:'history_five',title:'นักบันทึก',desc:'มีประวัติครบ 5 รายการ',ok:history.length>=5},
+    {id:'credit_1500',title:'กระเป๋าเริ่มแน่น',desc:'มีคะแนนอย่างน้อย 1,500',ok:balance>=1500},
+    {id:'daily_bonus',title:'มารับโบนัส',desc:'รับโบนัสรายวันสำเร็จ',ok:!!lastDaily},
+    {id:'chat_once',title:'ทักทายระบบ',desc:'ส่งแชตอย่างน้อย 1 ข้อความ',ok:messages.length>1}
+  ];
+}
+function updateAchievements(){
+  const rules=achievementRules();
+  let changed=false;
+  rules.forEach(r=>{ if(r.ok&&!achievements[r.id]){achievements[r.id]=true; changed=true;} });
+  const list=document.getElementById('achievementList');
+  if(list){
+    list.innerHTML=rules.map(r=>{
+      const unlocked=!!achievements[r.id];
+      return `<div><b>${unlocked?'✓':'○'} ${r.title}</b><br><span class="muted">${r.desc}</span><br><span class="badge">${unlocked?'ปลดล็อกแล้ว':'ยังไม่ปลดล็อก'}</span></div>`;
+    }).join('');
+  }
+  if(changed) save();
+}
+function updateRank(){
+  const body=document.getElementById('rankBody');
+  if(!body)return;
+  const rows=[
+    {name:'โปรไฟล์ของคุณ',credit:balance,you:true},
+    {name:'UFALaos Master',credit:9999},
+    {name:'Player Test',credit:3999},
+    {name:'Guest',credit:1500}
+  ].sort((a,b)=>b.credit-a.credit);
+  body.innerHTML=rows.map((r,i)=>`<tr><td>${i+1}</td><td>${r.name}${r.you?' <span class="badge">คุณ</span>':''}</td><td>${money(r.credit)}</td></tr>`).join('');
+}
+
+
+function runGameNavigationCheck(){
+  const gamePages=['slot','roulette','baccarat','fishing','lottery'];
+  const missing=gamePages.filter(id=>!document.getElementById(id));
+  if(missing.length){
+    console.warn('UFALaos V16 missing game pages:',missing);
+    return false;
+  }
+  return true;
+}
+function runIntegrityCheck(){
+  const required=['bal','plays','slotResult','rouletteResult','baccResult','fishResult','lotteryResult','achievementList','rankBody'];
+  const missing=required.filter(id=>!document.getElementById(id));
+  if(missing.length){
+    console.warn('UFALaos V16 missing elements:',missing);
+    return false;
+  }
+  return true;
+}
+
+function refreshAll(){
+  update();
+  renderChat();
+  renderHistory();
+  updateActivity();
+  updateAchievements();
+  updateRank();
+  applyV16Settings();
+}
+
+document.getElementById('msg').addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&!e.shiftKey)sendChat();
+});
+
+// Unified navigation layer: every [data-go] control routes through the same show() function.
+document.addEventListener('click', function(e){
+  const control=e.target.closest('[data-go]');
+  if(!control) return;
+  e.preventDefault();
+  const id=control.getAttribute('data-go');
+  if(id && document.getElementById(id)) show(id);
+});
+
+// Keep browser navigation in sync without breaking the existing local-demo state.
+const _originalShow=show;
+show=function(id){
+  if(!document.getElementById(id)){ toast('ไม่พบหน้านี้'); return; }
+  _originalShow(id);
+  try { history.replaceState({page:id},'',location.pathname+'#'+id); } catch(e) {}
+};
+window.addEventListener('popstate',function(){
+  const id=(location.hash||'').slice(1) || 'home';
+  show(document.getElementById(id)?id:'home');
+});
+
+runIntegrityCheck();
+runGameNavigationCheck();
+refreshAll();
+renderCategories();
+show((location.hash && document.getElementById(location.hash.slice(1))) ? location.hash.slice(1) : (document.getElementById(currentPage)?currentPage:'home'));
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden') save(); });
+window.addEventListener('beforeunload',save);
+</script>
+
+<div style="max-width:1100px;margin:0 auto;padding:0 18px 28px;text-align:center;color:#75697d;font-size:11px">
+  V16 Arcade • เวอร์ชัน V16 • Demo only • คะแนนไม่มีมูลค่าเงินจริง
+</div>
+<div class="mobile-bottom-nav" aria-label="เมนูมือถือ">
+  <button data-go="home">⌂<span>หน้าแรก</span></button>
+  <button data-go="games">🎮<span>เกม</span></button>
+  <button data-go="promo">🎁<span>กิจกรรม</span></button>
+  <button data-go="history">📜<span>ประวัติ</span></button>
+  <button data-go="profile">👤<span>โปรไฟล์</span></button>
+</div>
+<div id="v11Build" style="position:fixed;right:10px;bottom:10px;z-index:50;padding:7px 10px;border:1px solid #493357;border-radius:999px;background:#15111bee;color:#afa3b9;font-size:11px">V16 • Demo Only • Ready</div>
+<script>
+(function(){
+  const required=['home','games','promo','rank','chat','profile','history','achievements','admin','help','settings','member-ufa-999','catalog','slot','roulette','baccarat','fishing','lottery'];
+  const missing=required.filter(id=>!document.getElementById(id));
+  if(missing.length){ console.warn('UFALaos V16 page check failed:',missing); }
+  else { const el=document.getElementById('v16Build'); if(el)el.title='All required V16 pages detected'; }
+})();
+</script>
+<script>
+// V16 safety guard: keep the catalog self-contained and offline-friendly.
+window.UFALAOS_V16 = {version:'V16', mode:'DEMO_ONLY', monetaryValue:false, externalGameAPIs:false};
+</script>
+
+<div id="v16ReelOverlay" aria-hidden="true">
+  <div class="v16-reel-shell">
+    <div class="v16-reel-head"><div><h2 id="v16ReelTitle" style="margin:0">V16 Grand Reels</h2><small>Original UFALAOS demo game • Demo Credits only</small></div><button onclick="closeV16Reel()">ปิด</button></div>
+    <div class="v16-reels" id="v16Reels"></div>
+    <div class="v16-status" id="v16ReelStatus">พร้อมเล่น</div>
+    <div class="v16-controls"><b id="v16Bet">เล่นฟรี • +คะแนน</b><button class="primary" onclick="v16Spin()">เล่นรอบ</button><button onclick="v16ResetReel()">รีเซ็ต</button></div>
+    <p style="text-align:center;color:#8fa8c4;font-size:12px;margin:10px 0 0">เกมปริศนารีลแบบเดโมเพื่อความบันเทิง • เล่นฟรี • ไม่มีการเดิมพันหรือมูลค่าเงินจริง</p>
+  </div>
+</div>
+<div id="duckFlightOverlay" aria-hidden="true">
+  <div class="df-card">
+    <div class="df-head"><b>🦆 Duck Flight — เกมบินเดโม</b><button class="df-close" onclick="dfClose()">ปิด</button></div>
+    <div class="df-stage"><div class="df-cloud df-c1">☁️</div><div class="df-cloud df-c2">☁️</div><div class="df-cloud df-c3">☁️</div><div id="dfDuck">🦆</div><div id="dfMult" class="df-mult">1.00×</div><div class="df-track"></div><div id="dfState" class="df-state">กดเริ่ม แล้วดูเป็ดบินขึ้น</div></div>
+    <div class="df-controls"><div class="df-score"><div>คะแนนรอบนี้<b id="dfScore">0</b></div><div>คะแนนสูงสุด<b id="dfBest">0</b></div><div>สถานะ<b id="dfStatus">พร้อม</b></div></div><div class="df-actions"><button id="dfStart" class="primary" onclick="dfStart()">▶ เริ่มรอบ</button><button id="dfCollect" disabled onclick="dfCollect()">เก็บคะแนน</button></div><p class="df-note">เกมนี้เป็นเดโมเพื่อความบันเทิง คะแนนไม่มีมูลค่าเงินจริง</p></div>
+  </div>
+</div>
+<script>
+(function(){
+let t=null,start=0,score=0,best=Number(localStorage.getItem('uf_df_best')||0),running=false,ended=false;
+const $=id=>document.getElementById(id);
+function render(){ $('dfBest').textContent=Math.floor(best); $('dfScore').textContent=Math.floor(score); }
+window.openDuckFlight=function(){ $('duckFlightOverlay').classList.add('open'); $('duckFlightOverlay').setAttribute('aria-hidden','false'); dfReset(); };
+window.dfClose=function(){ if(running) return; $('duckFlightOverlay').classList.remove('open'); $('duckFlightOverlay').setAttribute('aria-hidden','true'); };
+window.dfReset=function(){ clearInterval(t);running=false;ended=false;score=0;$('dfMult').textContent='1.00×';$('dfDuck').style.transform='translate(0,0)';$('dfState').textContent='กดเริ่ม แล้วดูเป็ดบินขึ้น';$('dfStatus').textContent='พร้อม';$('dfStart').disabled=false;$('dfCollect').disabled=true;render(); };
+window.dfStart=function(){ if(running)return; running=true;ended=false;start=performance.now();score=0;$('dfStart').disabled=true;$('dfCollect').disabled=false;$('dfStatus').textContent='กำลังบิน';$('dfState').textContent='รอบกำลังดำเนินอยู่'; let endAt=3500+Math.random()*3500; t=setInterval(()=>{let elapsed=performance.now()-start;let m=1+elapsed/1700;score=m*100;$('dfMult').textContent=m.toFixed(2)+'×';let x=Math.min(300,elapsed/10),y=Math.sin(elapsed/250)*10-elapsed/18;$('dfDuck').style.transform=`translate(${x}px,${y}px) rotate(${Math.sin(elapsed/180)*6}deg)`;render();if(elapsed>endAt)dfEnd();},60); };
+window.dfEnd=function(){if(!running)return;clearInterval(t);running=false;ended=true;$('dfCollect').disabled=true;$('dfStart').disabled=false;$('dfStatus').textContent='จบรอบ';$('dfState').textContent='รอบจบแล้ว — กดเริ่มเพื่อเล่นอีกครั้ง';if(score>best){best=score;localStorage.setItem('uf_df_best',String(Math.floor(best)));}render();};
+window.dfCollect=function(){if(running){clearInterval(t);running=false;ended=true;$('dfCollect').disabled=true;$('dfStart').disabled=false;$('dfStatus').textContent='เก็บคะแนนแล้ว';$('dfState').textContent='เก็บคะแนนสำเร็จ — รอบใหม่เริ่มได้';if(score>best){best=score;localStorage.setItem('uf_df_best',String(Math.floor(best)));}render();}};
+window.addEventListener('keydown',e=>{if(e.key==='Escape'&&!running)dfClose();});render();
+})();
+
+let v16Bet=10, v16Spinning=false, v16CurrentGame='V16 Grand Reels';
+const v16Symbols=['A','K','Q','J','7','★','♦','♣'];
+function openV16ReelGame(name){v16CurrentGame=name||'V16 Grand Reels';document.getElementById('v16ReelTitle').textContent=v16CurrentGame;document.getElementById('v16ReelOverlay').classList.add('open');document.getElementById('v16ReelOverlay').setAttribute('aria-hidden','false');v16ResetReel();}
+function closeV16Reel(){document.getElementById('v16ReelOverlay').classList.remove('open');document.getElementById('v16ReelOverlay').setAttribute('aria-hidden','true');}
+function v16Adjust(n){v16Bet=10;document.getElementById('v16Bet').textContent='เล่นฟรี • +คะแนน';}
+function v16Grid(){const box=document.getElementById('v16Reels');box.innerHTML='';for(let c=0;c<5;c++){const col=document.createElement('div');col.className='v16-col';for(let r=0;r<4;r++){const cell=document.createElement('div');cell.className='v16-cell';cell.textContent=v16Symbols[(c*3+r)%v16Symbols.length];col.appendChild(cell)}box.appendChild(col)}}
+function v16ResetReel(){v16Grid();document.getElementById('v16ReelStatus').textContent='พร้อมเล่น';}
+function v16Spin(){if(v16Spinning)return;v16Spinning=true;const status=document.getElementById('v16ReelStatus');status.textContent='กำลังเล่น…';const cells=[...document.querySelectorAll('.v16-cell')];cells.forEach(c=>c.classList.remove('win'));let ticks=0;const timer=setInterval(()=>{cells.forEach(c=>c.textContent=v16Symbols[Math.floor(Math.random()*v16Symbols.length)]);ticks++;if(ticks>=12){clearInterval(timer);let matches=0;for(let c=0;c<5;c++){const col=[...document.querySelectorAll('.v16-col')[c].children];if(col[1].textContent===col[2].textContent){col[1].classList.add('win');col[2].classList.add('win');matches++;}}const points=matches*100+10;balance+=points;plays++;addHistory('Reel Puzzle: +'+points+' Demo Credits');save();update();status.textContent='ได้คะแนนเดโม +'+points+' • เป้าหมาย 10,000';v16Spinning=false;}} ,90);}
+</script>
+
+
+<script>
+(function(){
+  window.UFALAOS_V16_SESSION={mode:'DEMO_ONLY',loggedIn:true,provider:'local-demo',realMoney:false};
+  window.v16SessionCheck=function(){
+    const ok=!!window.UFALAOS_V16_SESSION && window.UFALAOS_V16_SESSION.realMoney===false;
+    if(ok) toast('V16 Demo Session พร้อมใช้งาน');
+    return ok;
+  };
+})();
+</script>
+<script id="safe-arcade-engine">
+(function(){
+  window.safeScore=Number(localStorage.getItem('v16_safe_score')||0);
+  function render(){['bal','homeBal','profileBal','achBal','adminBal'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent=(window.safeScore||0).toLocaleString()});}
+  window.openDemoGame=function(id,name){
+    var box=document.getElementById('gameCatalog'); if(!box)return;
+    var games={duck:['🦆','หลบสิ่งกีดขวาง เก็บคะแนนจากการควบคุม'],target:['🎯','แตะเป้าหมายที่ปรากฏให้เร็วที่สุด'],memory:['🧠','เปิดการ์ดและจับคู่ภาพ'],reflex:['⚡','แตะปุ่มเมื่อสัญญาณเปลี่ยน']};
+    var g=games[id]||['🎮','เกม Arcade ทำคะแนน'];
+    box.innerHTML='<div class="safe-game-panel"><span class="arcade-badge">🎮 Arcade • คะแนนล้วน</span><div class="safe-art" style="margin-top:10px;border-radius:16px">'+g[0]+'</div><h2 style="margin:14px 0 6px">'+name+'</h2><p class="muted">'+g[1]+'</p><div class="statgrid"><div class="stat"><b id="roundScore">0</b><br>คะแนนรอบนี้</div><div class="stat"><b id="bestScore">'+(Number(localStorage.getItem('v16_best_'+id)||0)).toLocaleString()+'</b><br>คะแนนสูงสุด</div></div><button id="safeStart" class="primary" style="margin-top:12px;width:100%">เริ่มรอบ</button><button id="safeBack" style="margin-top:8px;width:100%">กลับรายการเกม</button></div>';
+    var start=document.getElementById('safeStart'); if(start)start.onclick=function(){window.safePlay(id,name)};
+    var back=document.getElementById('safeBack'); if(back)back.onclick=function(){location.reload()};
+  };
+  window.safePlay=function(id,name){var score=Math.floor(50+Math.random()*451);window.safeScore+=score;localStorage.setItem('v16_safe_score',window.safeScore);var old=Number(localStorage.getItem('v16_best_'+id)||0);if(score>old)localStorage.setItem('v16_best_'+id,score);var r=document.getElementById('roundScore'),b=document.getElementById('bestScore');if(r)r.textContent=score.toLocaleString();if(b)b.textContent=Math.max(score,old).toLocaleString();render();if(typeof addHistory==='function')addHistory(name+' • +'+score+' คะแนน');if(typeof toast==='function')toast('ได้ '+score.toLocaleString()+' คะแนน');};
+  render();
+})();
+</script>
+</body>
+</html>
