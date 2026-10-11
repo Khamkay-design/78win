@@ -1,0 +1,38 @@
+78WIN — V159 Reference Working Draft v2 | Static QA Report
+
+Artifact: 78WIN_V159_REFERENCE_WORKING_DRAFT_v2.html
+File size: 1,819,589 bytes
+Base source: V135 Near-Complete Systems Layer (not confirmed V159 FINAL LOCKED)
+
+Static inventory:
+- .game: 50
+- .provider-game: 80
+- .studio-game: 80
+- .providers: 1
+- script: 27
+- style: 84
+- a[href]: 239
+- button: 48
+
+Validation:
+- doctype: PASS
+- html open/close: PASS
+- head open/close: PASS
+- body open/close: PASS
+- script open/close: PASS
+- new mobile fix present: PASS
+- original game cards retained: PASS
+- provider catalogue retained: PASS
+- studio catalogue retained: PASS
+
+Changes in v2:
+- Added responsive CSS targeting actual .games and .game selectors found in the source.
+- Kept two-column mobile grid with minmax(0,1fr).
+- Made provider row horizontally scrollable and prevented child cards from forcing page width.
+- Preserved source HTML, game entries, and existing scripts; only appended CSS.
+
+Limitations:
+- Static HTML audit only; no browser/device rendering test was performed.
+- Exact screenshot parity with https://www.787812.net/m/index.html is not verified.
+- This is not represented as the original V159 FINAL LOCKED source because that exact source file was not found in accessible Library results.
+- No deployment or GitHub upload was performed.
