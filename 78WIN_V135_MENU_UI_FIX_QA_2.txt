@@ -1,0 +1,28 @@
+78WIN V135 MENU UI FIX — QA RECHECK
+Date: 2026-10-16
+Artifact: 78WIN_V135_MENU_UI_FIX.html
+Size: 1,823,403 bytes
+
+STATIC CHECKS
+- HTML parser read: PASS
+- Doctype: PASS
+- Mobile viewport meta: PASS
+- Inline JavaScript syntax: PASS (28 scripts checked; 0 syntax errors)
+- Duplicate HTML IDs: PASS (0 after repair)
+- Menu repair markup/controller present: PASS
+- Inventory: 50 .game, 80 .provider-game, 80 .studio-game, 1 .providers, 239 anchors, 57 buttons, 7 inputs
+- Responsive overflow safeguards detected: PASS (static presence only)
+
+CHANGE IN THIS RECHECK
+- Renamed the style element ID from v128-all-games-master to v128-all-games-master-style. The original ID was duplicated by the game section and could cause ambiguous DOM lookup. CSS selectors remain unchanged, so the section styling target is preserved.
+
+KNOWN ISSUES / NOT VERIFIED
+- Two internal anchor destinations are missing: #arcade-game and #n-home. Some existing game/provider cards use #arcade-game; this recheck did not change those links because a safe destination/interaction needs confirmation.
+- Browser interaction test: BLOCKED by environment policy (Chromium navigation to both file:// and localhost returned ERR_BLOCKED_BY_ADMINISTRATOR).
+- iPhone Safari test: NOT VERIFIED.
+- Visual parity against the reference website: NOT VERIFIED.
+- Vercel deployment: NOT PERFORMED.
+- This artifact is based on V135, not confirmed as the original V159 FINAL LOCKED source.
+
+CONCLUSION
+Static checks pass for JavaScript syntax and duplicate IDs. This is not evidence that all interactions work or that the page is complete. Do not replace the live deployment until browser interaction and deployment checks are performed.
